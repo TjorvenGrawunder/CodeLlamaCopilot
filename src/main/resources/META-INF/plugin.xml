@@ -1,0 +1,40 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.example.CodeLlamaCopilot</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>CodeLlamaCopilot</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="tgrawunder@uos.de" url="https://www.yourcompany.com">Uni Osnabrück</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description>Copilot plugin for large language models</description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <inline.completion.provider implementation="org.example.codellamacopilot.util.CodeLlamaCompletionProvider"/>
+        <applicationService
+                serviceImplementation="org.example.codellamacopilot.settings.CopilotSettingsState"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
+                id="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
+                displayName="Code Llama Copilot"/>
+    </extensions>
+    <actions>
+        <action id="org.example.codellamacopilot.InsertCodeAction" class="org.example.codellamacopilot.InsertCodeAction"
+                text="Code Completion" description="Completes code">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Q"/>
+        </action>
+    </actions>
+</idea-plugin>
