@@ -1,4 +1,4 @@
-package org.example.codellamacopilot.util;
+package org.example.codellamacopilot.completionutil;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;

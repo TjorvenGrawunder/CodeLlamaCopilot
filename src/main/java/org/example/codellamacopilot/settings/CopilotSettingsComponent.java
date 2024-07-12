@@ -4,30 +4,40 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPasswordField;
-import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
+import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
 import org.example.codellamacopilot.llamaconnection.HuggingFaceRequestFormat;
 import org.example.codellamacopilot.llamaconnection.RequestFormat;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.Arrays;
 
 public class CopilotSettingsComponent {
 
+    //Components
     private final JPanel MAIN_PANEL;
-    private final JBPasswordField API_TOKEN_TEXT_FIELD = new JBPasswordField();
-    private final ComboBox<RequestFormat> MODEL_COMBO_BOX = new ComboBox<>();
+    private final JBPasswordField HUGGING_FACE_API_TOKEN_TEXT_FIELD = new JBPasswordField();
+    private final JBPasswordField CHAT_GPT_API_TOKEN_TEXT_FIELD = new JBPasswordField();
+    private final ComboBox<RequestFormat> COMPLETION_MODEL_COMBO_BOX = new ComboBox<>();
+    private final ComboBox<ChatRequestFormat> CHAT_MODEL_COMBO_BOX = new ComboBox<>();
     private final JBCheckBox USE_COMPLETION_CHECKBOX = new JBCheckBox("Use completion");
 
+    //Completion Request Formats
     private final RequestFormat huggingFaceRequestFormat = new HuggingFaceRequestFormat();
 
+    //Chat Request Formats
+    private final ChatRequestFormat chatGPTRequestFormat = new ChatGPTRequestFormat();
+
     public CopilotSettingsComponent() {
-        MODEL_COMBO_BOX.addItem(huggingFaceRequestFormat);
+        COMPLETION_MODEL_COMBO_BOX.addItem(huggingFaceRequestFormat);
+        CHAT_MODEL_COMBO_BOX.addItem(chatGPTRequestFormat);
         MAIN_PANEL = FormBuilder.createFormBuilder()
                 .addComponent(USE_COMPLETION_CHECKBOX, 1)
-                .addLabeledComponent(new JBLabel("Enter huggingface api token: "), API_TOKEN_TEXT_FIELD, 1, false)
-                .addLabeledComponent(new JBLabel("Select model: "), MODEL_COMBO_BOX, 1, false)
+                .addLabeledComponent(new JBLabel("Enter huggingface api token: "), HUGGING_FACE_API_TOKEN_TEXT_FIELD, 1, false)
+                .addLabeledComponent(new JBLabel("Enter chat gpt api token: "), CHAT_GPT_API_TOKEN_TEXT_FIELD, 1, false)
+                .addLabeledComponent(new JBLabel("Select model: "), COMPLETION_MODEL_COMBO_BOX, 1, false)
+                .addLabeledComponent(new JBLabel("Select chat model: "), CHAT_MODEL_COMBO_BOX, 1, false)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -38,28 +48,44 @@ public class CopilotSettingsComponent {
     }
 
     public JComponent getPreferredFocusedComponent() {
-        return API_TOKEN_TEXT_FIELD;
+        return HUGGING_FACE_API_TOKEN_TEXT_FIELD;
     }
 
     public ComboBox<RequestFormat> getModelComboBox() {
-        return MODEL_COMBO_BOX;
+        return COMPLETION_MODEL_COMBO_BOX;
     }
 
-    public RequestFormat getSelectedModel() {
-        return MODEL_COMBO_BOX.getItemAt(MODEL_COMBO_BOX.getSelectedIndex());
+    public RequestFormat getSelectedCompletionModel() {
+        return COMPLETION_MODEL_COMBO_BOX.getItemAt(COMPLETION_MODEL_COMBO_BOX.getSelectedIndex());
+    }
+
+    public ChatRequestFormat getSelectedChatModel() {
+        return CHAT_MODEL_COMBO_BOX.getItemAt(CHAT_MODEL_COMBO_BOX.getSelectedIndex());
     }
 
     @NotNull
-    public String getAPITokenText() {
-        return String.valueOf(API_TOKEN_TEXT_FIELD.getPassword());
+    public String getCompletionAPITokenText() {
+        return String.valueOf(HUGGING_FACE_API_TOKEN_TEXT_FIELD.getPassword());
     }
 
-    public void setAPITokenText(@NotNull String newText) {
-        API_TOKEN_TEXT_FIELD.setText(newText);
+    public void setCompletionAPITokenText(@NotNull String newText) {
+        HUGGING_FACE_API_TOKEN_TEXT_FIELD.setText(newText);
+    }
+
+    public String getChatAPITokenText() {
+        return String.valueOf(CHAT_GPT_API_TOKEN_TEXT_FIELD.getPassword());
+    }
+
+    public void setChatAPITokenText(@NotNull String newText) {
+        CHAT_GPT_API_TOKEN_TEXT_FIELD.setText(newText);
     }
 
     public void setSelectedModel(@NotNull RequestFormat model) {
-        MODEL_COMBO_BOX.setSelectedItem(model);
+        COMPLETION_MODEL_COMBO_BOX.setSelectedItem(model);
+    }
+
+    public void setSelectedChatModel(@NotNull ChatRequestFormat model) {
+        CHAT_MODEL_COMBO_BOX.setSelectedItem(model);
     }
 
     public void setUseCompletion(boolean useCompletion) {

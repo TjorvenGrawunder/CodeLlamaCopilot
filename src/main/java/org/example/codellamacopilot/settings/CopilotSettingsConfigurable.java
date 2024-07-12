@@ -34,8 +34,9 @@ public final class CopilotSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         CopilotSettingsState settings = CopilotSettingsState.getInstance();
-        boolean modified = !copilotSettingsComponent.getAPITokenText().equals(settings.apiToken);
-        modified |= copilotSettingsComponent.getSelectedModel() != settings.usedModel;
+        boolean modified = !copilotSettingsComponent.getCompletionAPITokenText().equals(settings.apiToken);
+        modified |= !copilotSettingsComponent.getChatAPITokenText().equals(settings.chatApiToken);
+        modified |= copilotSettingsComponent.getSelectedCompletionModel() != settings.usedModel;
         modified |= copilotSettingsComponent.getUseCompletion() != settings.useCompletion;
         return modified;
     }
@@ -43,15 +44,17 @@ public final class CopilotSettingsConfigurable implements Configurable {
     @Override
     public void apply() {
         CopilotSettingsState settings = CopilotSettingsState.getInstance();
-        settings.apiToken = copilotSettingsComponent.getAPITokenText();
-        settings.usedModel = copilotSettingsComponent.getSelectedModel();
+        settings.apiToken = copilotSettingsComponent.getCompletionAPITokenText();
+        settings.chatApiToken = copilotSettingsComponent.getChatAPITokenText();
+        settings.usedModel = copilotSettingsComponent.getSelectedCompletionModel();
         settings.useCompletion = copilotSettingsComponent.getUseCompletion();
     }
 
     @Override
     public void reset() {
         CopilotSettingsState settings = CopilotSettingsState.getInstance();
-        copilotSettingsComponent.setAPITokenText(settings.apiToken);
+        copilotSettingsComponent.setCompletionAPITokenText(settings.apiToken);
+        copilotSettingsComponent.setChatAPITokenText(settings.chatApiToken);
         copilotSettingsComponent.getModelComboBox().setSelectedItem(settings.usedModel);
         copilotSettingsComponent.setUseCompletion(settings.useCompletion);
     }

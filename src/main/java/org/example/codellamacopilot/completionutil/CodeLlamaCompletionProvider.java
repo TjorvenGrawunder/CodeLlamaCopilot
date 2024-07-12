@@ -1,29 +1,23 @@
-package org.example.codellamacopilot.util;
+package org.example.codellamacopilot.completionutil;
 
-import com.intellij.codeInsight.inline.completion.InlineCompletionElement;
-import com.intellij.codeInsight.inline.completion.InlineCompletionEvent;
-import com.intellij.codeInsight.inline.completion.InlineCompletionProvider;
-import com.intellij.codeInsight.inline.completion.InlineCompletionRequest;
+import com.intellij.codeInsight.inline.completion.*;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.util.concurrency.AppExecutorUtil;
-import com.jetbrains.rd.util.Result;
 import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 import kotlinx.coroutines.flow.FlowKt;
 import org.example.codellamacopilot.llamaconnection.LLMClient;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
+import org.example.codellamacopilot.util.CodeSnippet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.concurrency.CancellablePromise;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
     @Nullable
@@ -67,4 +61,6 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
     public boolean isEnabled(@NotNull InlineCompletionEvent inlineCompletionEvent) {
         return CopilotSettingsState.getInstance().useCompletion;
     }
+
+
 }

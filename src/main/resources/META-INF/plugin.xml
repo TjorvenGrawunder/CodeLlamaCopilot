@@ -22,7 +22,7 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <inline.completion.provider implementation="org.example.codellamacopilot.util.CodeLlamaCompletionProvider"/>
+        <inline.completion.provider implementation="org.example.codellamacopilot.completionutil.CodeLlamaCompletionProvider"/>
         <applicationService
                 serviceImplementation="org.example.codellamacopilot.settings.CopilotSettingsState"/>
         <applicationConfigurable
@@ -30,6 +30,8 @@
                 instance="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
                 id="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
                 displayName="Code Llama Copilot"/>
+        <toolWindow id="Chat Window" secondary="true" anchor="right"
+                        factoryClass="org.example.codellamacopilot.chatwindow.ui.ChatToolWindowFactory"/>
     </extensions>
     <actions>
         <action id="org.example.codellamacopilot.InsertCodeAction" class="org.example.codellamacopilot.InsertCodeAction"

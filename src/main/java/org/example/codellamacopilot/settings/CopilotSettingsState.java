@@ -20,6 +20,7 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
     @OptionTag(converter = RequestFormatConverter.class)
     public RequestFormat usedModel;
     public String apiToken;
+    public String chatApiToken;
     public boolean useCompletion;
 
     public static CopilotSettingsState getInstance() {
