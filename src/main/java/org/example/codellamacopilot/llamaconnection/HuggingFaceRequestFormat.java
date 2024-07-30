@@ -18,7 +18,7 @@ import java.util.List;
 
 public class HuggingFaceRequestFormat implements RequestFormat, Serializable {
 
-    private final String API_URL = "https://api-inference.huggingface.co/models/codellama/CodeLlama-7b-hf";
+    private final String API_URL = "https://api-inference.huggingface.co/models/codellama/CodeLlama-13b-hf";
     private final String LLAMA3_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-70B";
 
     @Override
@@ -48,6 +48,28 @@ public class HuggingFaceRequestFormat implements RequestFormat, Serializable {
         TypeFactory typeFactory = mapper.getTypeFactory();
         List<HuggingfaceResponseObject> list = mapper.readValue(response, typeFactory.constructCollectionType(List.class, HuggingfaceResponseObject.class));
         return list.get(0).getGeneratedCode().replaceAll("<EOT>","");
+    }
+
+    @Override
+    public HttpRequest getCommentRequest(String comment) {
+        comment = "Please implement the following comment in java! Comment: " + comment +
+                "The implemtation of the comment is ";
+        HuggingFaceRequestObject requestObject = new HuggingFaceRequestObject(comment, new HuggingFaceRequestParameters(
+                null, null, null, 0.9f, 250, 0.01f,
+                false, null, null));
+        String apiToken = CopilotSettingsState.getInstance().apiToken;
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        try {
+            return HttpRequest.newBuilder()
+                    .uri(URI.create(API_URL))
+                    .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestObject)))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + apiToken).build();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

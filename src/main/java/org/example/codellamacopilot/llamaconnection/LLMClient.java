@@ -25,4 +25,11 @@ public class LLMClient {
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
         return REQUEST_FORMAT.parseResponse(response.body());
     }
+
+    public String sendComment(String comment) throws IOException, InterruptedException {
+        HttpRequest request = REQUEST_FORMAT.getCommentRequest(comment);
+        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Response: " + response.body());
+        return REQUEST_FORMAT.parseResponse(response.body());
+    }
 }

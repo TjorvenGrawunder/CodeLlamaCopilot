@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.concurrency.CancellablePromise;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
@@ -29,6 +30,55 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
         if (currentProject != null) {
             Document document = inlineCompletionRequest.getDocument();
             CaretModel caretModel = inlineCompletionRequest.getEditor().getCaretModel();
+
+
+            CancellablePromise<String> commentPromise = ReadAction.nonBlocking(() -> {
+                ProgressManager.checkCanceled();
+                int currentOffset = caretModel.getOffset();
+                int currentLine = document.getLineNumber(currentOffset);
+                boolean foundComment = false;
+                String comment = "";
+                while (!foundComment && currentLine > 0) {
+                    ProgressManager.checkCanceled();
+                    comment = document.getCharsSequence().subSequence(document.getLineStartOffset(currentLine), document.getLineEndOffset(currentLine)).toString();
+                    if (comment.trim().startsWith("//") || comment.trim().startsWith("/*")) {
+                        foundComment = true;
+                        comment = comment.substring(comment.indexOf("//") + 2);
+                    } else if (comment.trim().startsWith("*") && comment.trim().endsWith("*/")) {
+                        int multiLineCommentEnd = currentLine;
+                        while (currentLine > 0 && !comment.trim().startsWith("*")) {
+                            currentLine--;
+                            comment = document.getCharsSequence().subSequence(document.getLineStartOffset(currentLine), document.getLineEndOffset(multiLineCommentEnd)).toString();
+                        }
+                    } else if (comment.trim().isEmpty()) {
+                        currentLine--;
+                    } else {
+                        comment = "";
+                        break;
+                    }
+                }
+                System.out.println("Comment: " + comment);
+                return comment;
+            }).expireWith(CodeLlamaCopilotPluginDisposable.getInstance()).submit(AppExecutorUtil.getAppExecutorService());
+
+            try {
+                if(commentPromise.get() != null && !commentPromise.get().isEmpty()){
+                    try {
+                        System.out.println("Comment2: " + commentPromise.get());
+                        ProgressManager.checkCanceled();
+                        response = client.sendComment(commentPromise.get());
+                        System.out.println("Response: " + response);
+                        ProgressManager.checkCanceled();
+                    } catch (IOException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return FlowKt.flowOf(new InlineCompletionElement(response));
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
 
             CancellablePromise<CodeSnippet> cb = ReadAction.nonBlocking(() -> {
                 ProgressManager.checkCanceled();
@@ -60,6 +110,10 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
     @Override
     public boolean isEnabled(@NotNull InlineCompletionEvent inlineCompletionEvent) {
         return CopilotSettingsState.getInstance().useCompletion;
+    }
+
+    private boolean aboveIsComment(){
+        return false;
     }
 
 

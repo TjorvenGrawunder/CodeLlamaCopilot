@@ -17,19 +17,25 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatGPTRequestFormat implements ChatRequestFormat {
 
     private final String API_URL = "https://api.openai.com/v1/chat/completions";
 
+    List<MessageObject> messages = new ArrayList<>() {
+        {
+            add(new MessageObject("system", "You are an java assistant, skilled in explaining complex programming concepts."));
+        }
+    };
+
     @Override
     public HttpRequest getRequest(String message) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        MessageObject[] messages = new MessageObject[2];
-        messages[0] = new MessageObject("system", "You are an assistant, skilled in explaining complex programming concepts.");
-        messages[1] = new MessageObject("user", message);
-        ChatGPTRequestObject requestObject = new ChatGPTRequestObject("gpt-3.5-turbo", messages);
+        messages.add(new MessageObject("user", message));
+        ChatGPTRequestObject requestObject = new ChatGPTRequestObject("gpt-4o-mini", messages);
 
         String apiToken = CopilotSettingsState.getInstance().chatApiToken;
 
@@ -54,6 +60,8 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        return responseObject.getChoices()[0].getMessage().getContent();
+        response = responseObject.getChoices()[0].getMessage().getContent();
+        messages.add(new MessageObject("assistant", response));
+        return response;
     }
 }

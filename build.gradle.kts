@@ -11,6 +11,13 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    // https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
+    implementation("com.fifesoft:rsyntaxtextarea:3.0.4")
+    // https://central.sonatype.com/artifact/es.nitaur.markdown/txtmark
+    implementation("es.nitaur.markdown:txtmark:0.16")
+}
+
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {

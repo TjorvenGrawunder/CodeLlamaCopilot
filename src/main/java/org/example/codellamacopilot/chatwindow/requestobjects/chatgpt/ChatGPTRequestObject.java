@@ -3,21 +3,23 @@ package org.example.codellamacopilot.chatwindow.requestobjects.chatgpt;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 
+import java.util.List;
+
 public class ChatGPTRequestObject {
     private String model;
-    private MessageObject[] messages;
+    private List<MessageObject> messages;
 
-    public ChatGPTRequestObject(String model, MessageObject[] messages){
+    public ChatGPTRequestObject(String model, List<MessageObject> messages){
         this.model = model;
         this.messages = messages;
     }
     @JsonProperty("messages")
-    public MessageObject[] getMessages() {
+    public List<MessageObject> getMessages() {
         return messages;
     }
 
     @JsonProperty("messages")
-    public void setMessages(MessageObject[] messages) {
+    public void setMessages(List<MessageObject> messages) {
         this.messages = messages;
     }
 
