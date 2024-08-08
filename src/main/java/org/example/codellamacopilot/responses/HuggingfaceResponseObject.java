@@ -2,25 +2,25 @@ package org.example.codellamacopilot.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class HuggingfaceResponseObject extends ResponseObject{
-    private String generatedCode;
-    private String error;
+public class HuggingfaceResponseObject extends ResponseObject {
+    private java.lang.String generatedCode;
+    private java.lang.String error;
 
     @JsonProperty("generated_text")
-    public String getGeneratedCode() {
+    public java.lang.String getGeneratedCode() {
         return generatedCode;
     }
 
     @JsonProperty("generated_text")
-    public void setGeneratedCode(String generatedCode) {
+    public void setGeneratedCode(java.lang.String generatedCode) {
         this.generatedCode = generatedCode;
     }
 
-    public String getError() {
+    public java.lang.String getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(java.lang.String error) {
         this.error = error;
     }
 }

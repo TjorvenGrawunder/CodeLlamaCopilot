@@ -10,21 +10,22 @@ import com.intellij.util.concurrency.AppExecutorUtil;
 import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 import kotlinx.coroutines.flow.FlowKt;
+import org.example.codellamacopilot.chatwindow.api.ChatClient;
 import org.example.codellamacopilot.llamaconnection.LLMClient;
-import org.example.codellamacopilot.settings.CopilotSettingsState;
+import org.example.codellamacopilot.settings.CopilotSettings;
 import org.example.codellamacopilot.util.CodeSnippet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.concurrency.CancellablePromise;
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
     @Nullable
     @Override
     public Object getProposals(@NotNull InlineCompletionRequest inlineCompletionRequest, @NotNull Continuation<? super Flow<InlineCompletionElement>> continuation) {
-        LLMClient client = new LLMClient(CopilotSettingsState.getInstance().usedModel);
+        LLMClient client = new LLMClient(CopilotSettings.getInstance().usedModel);
+        ChatClient chatClient = new ChatClient(inlineCompletionRequest.getEditor().getProject(), CopilotSettings.getInstance().usedChatModel);
         Project currentProject = inlineCompletionRequest.getEditor().getProject();
         String response = "";
         if (currentProject != null) {
@@ -57,26 +58,23 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
                         break;
                     }
                 }
-                System.out.println("Comment: " + comment);
                 return comment;
             }).expireWith(CodeLlamaCopilotPluginDisposable.getInstance()).submit(AppExecutorUtil.getAppExecutorService());
 
             try {
                 if(commentPromise.get() != null && !commentPromise.get().isEmpty()){
                     try {
-                        System.out.println("Comment2: " + commentPromise.get());
                         ProgressManager.checkCanceled();
-                        response = client.sendComment(commentPromise.get());
-                        System.out.println("Response: " + response);
+                        response = chatClient.sendMessage("Please provide a method in java that implements the " +
+                                "following comment. Only provide code and dont use markdown. " +
+                                "Comment:" + commentPromise.get());
                         ProgressManager.checkCanceled();
-                    } catch (IOException | InterruptedException e) {
+                    } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                     return FlowKt.flowOf(new InlineCompletionElement(response));
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
 
@@ -109,7 +107,7 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
 
     @Override
     public boolean isEnabled(@NotNull InlineCompletionEvent inlineCompletionEvent) {
-        return CopilotSettingsState.getInstance().useCompletion;
+        return CopilotSettings.getInstance().useCompletion;
     }
 
     private boolean aboveIsComment(){

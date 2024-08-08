@@ -1,8 +1,5 @@
-package org.example.codellamacopilot;
+package org.example.codellamacopilot.actions;
 
-import com.intellij.codeInsight.inline.completion.InlineCompletionElement;
-import com.intellij.codeInsight.inline.completion.InlineCompletionEvent;
-import com.intellij.codeInsight.inline.completion.InlineCompletionProvider;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -11,7 +8,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import org.example.codellamacopilot.llamaconnection.LLMClient;
-import org.example.codellamacopilot.settings.CopilotSettingsState;
+import org.example.codellamacopilot.settings.CopilotSettings;
 import org.example.codellamacopilot.util.CodeSnippet;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +17,7 @@ import java.io.IOException;
 public class InsertCodeAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        LLMClient client = new LLMClient(CopilotSettingsState.getInstance().usedModel);
+        LLMClient client = new LLMClient(CopilotSettings.getInstance().usedModel);
         Project currentProject = event.getProject();
         Editor editor = event.getData(CommonDataKeys.EDITOR);
         if(editor != null) {

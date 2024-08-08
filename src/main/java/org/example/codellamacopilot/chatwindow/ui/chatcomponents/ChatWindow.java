@@ -1,24 +1,20 @@
 package org.example.codellamacopilot.chatwindow.ui.chatcomponents;
 
 
-import com.intellij.markdown.utils.MarkdownToHtmlConverter;
-import com.intellij.openapi.application.ApplicationListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.AnimatedIcon;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 
 import com.intellij.ui.components.fields.ExpandableTextField;
 import com.intellij.ui.components.fields.ExtendableTextComponent;
-import com.intellij.util.ui.UIUtil;
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
-import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
+import org.example.codellamacopilot.settings.CopilotSettings;
 
 import javax.swing.*;
 
@@ -28,14 +24,14 @@ public class ChatWindow {
     private JPanel mainPanel;
     private JPanel messagePanel;
     private JScrollPane scrollPane;
-    private JTextField inputField;
+    private ExpandableTextField inputField;
     private ChatClient chatClient;
 
     public ChatWindow(Project project) {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        this.chatClient = new ChatClient(project, new ChatGPTRequestFormat());
+        this.chatClient = new ChatClient(project, CopilotSettings.getInstance().usedChatModel);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
@@ -44,7 +40,7 @@ public class ChatWindow {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        ExpandableTextField inputField = new ExpandableTextField();
+        inputField = new ExpandableTextField();
 
         inputField.addActionListener(e -> {
 
@@ -81,33 +77,41 @@ public class ChatWindow {
         //String response = "[$PROFILE$]: extended\n" + chatClient.sendMessage(message);
         //String html = Processor.process(response);
 
+        boolean skipResponse = false;
         String response;
         if(message.equals("\\debug")){
             response = chatClient.debug();
         } else if(message.equals("\\explain")){
             response = chatClient.explain();
+        } else if(message.equals("\\test")) {
+            response = chatClient.test();
+            //skipResponse = true;
         } else {
             response = chatClient.sendMessage(message);
         }
 
-        Parser parser = Parser.builder().build();
-        Document document = parser.parse(response);
-        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        if(!skipResponse){
+            Parser parser = Parser.builder().build();
+            Document document = parser.parse(response);
+            HtmlRenderer renderer = HtmlRenderer.builder().build();
 
 
-        JTextPane textPane = new JTextPane();
-        textPane.setContentType("text/html");
-        textPane.setText(renderer.render(document));
-        textPane.setFont(new Font("Arial", Font.PLAIN, 14));
-        textPane.setEditable(false);
-        textPane.setOpaque(true);
+            JTextPane textPane = new JTextPane();
+            textPane.setContentType("text/html");
+            textPane.setText(renderer.render(document));
+            textPane.setFont(new Font("Arial", Font.PLAIN, 14));
+            textPane.setEditable(false);
+            textPane.setOpaque(true);
 
-        textPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            textPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        messagePanel.add(textPane);
-        messagePanel.revalidate();
+            messagePanel.add(textPane);
+            messagePanel.revalidate();
+
+        }
 
         JScrollBar vertical = scrollPane.getVerticalScrollBar();
         vertical.setValue(vertical.getMaximum());
+
     }
 }

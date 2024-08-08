@@ -24,19 +24,24 @@
     <extensions defaultExtensionNs="com.intellij">
         <inline.completion.provider implementation="org.example.codellamacopilot.completionutil.CodeLlamaCompletionProvider"/>
         <applicationService
-                serviceImplementation="org.example.codellamacopilot.settings.CopilotSettingsState"/>
+                serviceImplementation="org.example.codellamacopilot.settings.CopilotSettings"/>
         <applicationConfigurable
                 parentId="tools"
                 instance="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
                 id="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
                 displayName="Code Llama Copilot"/>
         <toolWindow id="Chat Window" secondary="true" anchor="right"
-                        factoryClass="org.example.codellamacopilot.chatwindow.ui.ChatToolWindowFactory"/>
+                    factoryClass="org.example.codellamacopilot.chatwindow.ui.ChatToolWindowFactory"/>
     </extensions>
     <actions>
-        <action id="org.example.codellamacopilot.InsertCodeAction" class="org.example.codellamacopilot.InsertCodeAction"
+        <action id="org.example.codellamacopilot.actions.InsertCodeAction" class="org.example.codellamacopilot.actions.InsertCodeAction"
                 text="Code Completion" description="Completes code">
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Q"/>
+        </action>
+        <action id="org.example.codellamacopilot.actions.ShowOtherPropositionsAction"
+                class="org.example.codellamacopilot.actions.ShowOtherPropositionsAction"
+                text="ShowOtherPropositionsAction" description="Shows window with more code propositions">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt U"/>
         </action>
     </actions>
 </idea-plugin>

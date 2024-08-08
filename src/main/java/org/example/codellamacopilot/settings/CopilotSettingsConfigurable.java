@@ -10,8 +10,6 @@ public final class CopilotSettingsConfigurable implements Configurable {
 
     private CopilotSettingsComponent copilotSettingsComponent;
 
-    // A default constructor with no arguments is required because this implementation
-    // is registered in an applicationConfigurable EP
 
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
@@ -33,29 +31,32 @@ public final class CopilotSettingsConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
-        CopilotSettingsState settings = CopilotSettingsState.getInstance();
+        CopilotSettings settings = CopilotSettings.getInstance();
         boolean modified = !copilotSettingsComponent.getCompletionAPITokenText().equals(settings.apiToken);
         modified |= !copilotSettingsComponent.getChatAPITokenText().equals(settings.chatApiToken);
         modified |= copilotSettingsComponent.getSelectedCompletionModel() != settings.usedModel;
+        modified |= copilotSettingsComponent.getSelectedChatModel() != settings.usedChatModel;
         modified |= copilotSettingsComponent.getUseCompletion() != settings.useCompletion;
         return modified;
     }
 
     @Override
     public void apply() {
-        CopilotSettingsState settings = CopilotSettingsState.getInstance();
+        CopilotSettings settings = CopilotSettings.getInstance();
         settings.apiToken = copilotSettingsComponent.getCompletionAPITokenText();
         settings.chatApiToken = copilotSettingsComponent.getChatAPITokenText();
         settings.usedModel = copilotSettingsComponent.getSelectedCompletionModel();
+        settings.usedChatModel = copilotSettingsComponent.getSelectedChatModel();
         settings.useCompletion = copilotSettingsComponent.getUseCompletion();
     }
 
     @Override
     public void reset() {
-        CopilotSettingsState settings = CopilotSettingsState.getInstance();
+        CopilotSettings settings = CopilotSettings.getInstance();
         copilotSettingsComponent.setCompletionAPITokenText(settings.apiToken);
         copilotSettingsComponent.setChatAPITokenText(settings.chatApiToken);
-        copilotSettingsComponent.getModelComboBox().setSelectedItem(settings.usedModel);
+        copilotSettingsComponent.setSelectedModel(settings.usedModel);
+        copilotSettingsComponent.setSelectedChatModel(settings.usedChatModel);
         copilotSettingsComponent.setUseCompletion(settings.useCompletion);
     }
 

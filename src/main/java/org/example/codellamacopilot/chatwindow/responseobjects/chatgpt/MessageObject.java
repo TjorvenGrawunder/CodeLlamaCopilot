@@ -1,7 +1,9 @@
 package org.example.codellamacopilot.chatwindow.responseobjects.chatgpt;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MessageObject {
     private String role;
     private String content;
@@ -32,4 +34,5 @@ public class MessageObject {
     public void setContent(String content) {
         this.content = content;
     }
+
 }

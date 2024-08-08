@@ -3,20 +3,13 @@ package org.example.codellamacopilot.chatwindow.requestformats;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.intellij.openapi.project.Project;
-import org.example.codellamacopilot.chatwindow.parser.ResponseParser;
 import org.example.codellamacopilot.chatwindow.requestobjects.chatgpt.ChatGPTRequestObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTResponseObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
-import org.example.codellamacopilot.llamaconnection.RequestFormat;
-import org.example.codellamacopilot.settings.CopilotSettingsState;
-import org.example.codellamacopilot.util.CodeSnippet;
+import org.example.codellamacopilot.settings.CopilotSettings;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +19,8 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
 
     List<MessageObject> messages = new ArrayList<>() {
         {
-            add(new MessageObject("system", "You are an java assistant, skilled in explaining complex programming concepts."));
+            add(new MessageObject("system", "You are a java assistant, skilled in explaining complex programming concepts."));
+            //add(new MessageObject("system", "You are a java programmer, skilled in programming. You are not allowed to write other text than Code."));
         }
     };
 
@@ -37,7 +31,7 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
         messages.add(new MessageObject("user", message));
         ChatGPTRequestObject requestObject = new ChatGPTRequestObject("gpt-4o-mini", messages);
 
-        String apiToken = CopilotSettingsState.getInstance().chatApiToken;
+        String apiToken = CopilotSettings.getInstance().chatApiToken;
 
         try {
             return HttpRequest.newBuilder()
@@ -63,5 +57,10 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
         response = responseObject.getChoices()[0].getMessage().getContent();
         messages.add(new MessageObject("assistant", response));
         return response;
+    }
+
+    @Override
+    public String toString() {
+        return "ChatGPT";
     }
 }
