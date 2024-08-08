@@ -8,7 +8,7 @@ import org.example.codellamacopilot.completionutil.CompletionPropositionsStorage
 import org.example.codellamacopilot.requests.HuggingFaceRequestObject;
 import org.example.codellamacopilot.requests.requestparameters.HuggingFaceRequestParameters;
 import org.example.codellamacopilot.responses.HuggingfaceResponseObject;
-import org.example.codellamacopilot.settings.CopilotSettings;
+import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.example.codellamacopilot.util.CodeSnippet;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class HuggingFaceRequestFormat implements RequestFormat, Serializable {
     }
 
     private HttpRequest getHttpRequest(HuggingFaceRequestObject requestObject) {
-        String apiToken = CopilotSettings.getInstance().apiToken;
+        String apiToken = CopilotSettingsState.getInstance().apiToken;
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 

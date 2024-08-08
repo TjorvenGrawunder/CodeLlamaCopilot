@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
         name = "org.example.codellamacopilot.settings.CopilotSettingsState",
         storages = @Storage("CodeLlamaCopilotSettings.xml")
 )
-public final class CopilotSettings implements PersistentStateComponent<CopilotSettings> {
+public final class CopilotSettingsState implements PersistentStateComponent<CopilotSettingsState> {
 
     @OptionTag(converter = RequestFormatConverter.class)
     public RequestFormat usedModel;
@@ -27,16 +27,16 @@ public final class CopilotSettings implements PersistentStateComponent<CopilotSe
     public String chatApiToken;
     public boolean useCompletion;
 
-    public static CopilotSettings getInstance() {
-        return ApplicationManager.getApplication().getService(CopilotSettings.class);
+    public static CopilotSettingsState getInstance() {
+        return ApplicationManager.getApplication().getService(CopilotSettingsState.class);
     }
     @Override
-    public CopilotSettings getState() {
+    public CopilotSettingsState getState() {
         return this;
     }
 
     @Override
-    public void loadState(@NotNull CopilotSettings state) {
+    public void loadState(@NotNull CopilotSettingsState state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 }

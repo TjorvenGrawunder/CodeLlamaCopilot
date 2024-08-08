@@ -31,7 +31,7 @@ public final class CopilotSettingsConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
-        CopilotSettings settings = CopilotSettings.getInstance();
+        CopilotSettingsState settings = CopilotSettingsState.getInstance();
         boolean modified = !copilotSettingsComponent.getCompletionAPITokenText().equals(settings.apiToken);
         modified |= !copilotSettingsComponent.getChatAPITokenText().equals(settings.chatApiToken);
         modified |= copilotSettingsComponent.getSelectedCompletionModel() != settings.usedModel;
@@ -42,7 +42,7 @@ public final class CopilotSettingsConfigurable implements Configurable {
 
     @Override
     public void apply() {
-        CopilotSettings settings = CopilotSettings.getInstance();
+        CopilotSettingsState settings = CopilotSettingsState.getInstance();
         settings.apiToken = copilotSettingsComponent.getCompletionAPITokenText();
         settings.chatApiToken = copilotSettingsComponent.getChatAPITokenText();
         settings.usedModel = copilotSettingsComponent.getSelectedCompletionModel();
@@ -52,7 +52,7 @@ public final class CopilotSettingsConfigurable implements Configurable {
 
     @Override
     public void reset() {
-        CopilotSettings settings = CopilotSettings.getInstance();
+        CopilotSettingsState settings = CopilotSettingsState.getInstance();
         copilotSettingsComponent.setCompletionAPITokenText(settings.apiToken);
         copilotSettingsComponent.setChatAPITokenText(settings.chatApiToken);
         copilotSettingsComponent.setSelectedModel(settings.usedModel);

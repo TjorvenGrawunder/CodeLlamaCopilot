@@ -24,7 +24,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <inline.completion.provider implementation="org.example.codellamacopilot.completionutil.CodeLlamaCompletionProvider"/>
         <applicationService
-                serviceImplementation="org.example.codellamacopilot.settings.CopilotSettings"/>
+                serviceImplementation="org.example.codellamacopilot.settings.CopilotSettingsState"/>
         <applicationConfigurable
                 parentId="tools"
                 instance="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"

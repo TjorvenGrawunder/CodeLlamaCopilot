@@ -14,7 +14,8 @@ import org.example.codellamacopilot.chatwindow.api.ChatClient;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
-import org.example.codellamacopilot.settings.CopilotSettings;
+import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
+import org.example.codellamacopilot.settings.CopilotSettingsState;
 
 import javax.swing.*;
 
@@ -31,7 +32,7 @@ public class ChatWindow {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        this.chatClient = new ChatClient(project, CopilotSettings.getInstance().usedChatModel);
+        this.chatClient = new ChatClient(project, CopilotSettingsState.getInstance().usedChatModel);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));

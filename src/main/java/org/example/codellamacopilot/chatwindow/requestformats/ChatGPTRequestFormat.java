@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.codellamacopilot.chatwindow.requestobjects.chatgpt.ChatGPTRequestObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTResponseObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
-import org.example.codellamacopilot.settings.CopilotSettings;
+import org.example.codellamacopilot.settings.CopilotSettingsState;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -31,7 +31,7 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
         messages.add(new MessageObject("user", message));
         ChatGPTRequestObject requestObject = new ChatGPTRequestObject("gpt-4o-mini", messages);
 
-        String apiToken = CopilotSettings.getInstance().chatApiToken;
+        String apiToken = CopilotSettingsState.getInstance().chatApiToken;
 
         try {
             return HttpRequest.newBuilder()
