@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.22"
     id("org.jetbrains.intellij") version "1.17.2"
+    id("com.teamdev.jxbrowser") version "1.1.0"
 }
 
 group = "com.example"
@@ -11,11 +12,19 @@ repositories {
     mavenCentral()
 }
 
+jxbrowser {
+    version = "7.40.0"
+}
+
+
 dependencies {
     // https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
     implementation("com.fifesoft:rsyntaxtextarea:3.0.4")
     // https://central.sonatype.com/artifact/es.nitaur.markdown/txtmark
     implementation("es.nitaur.markdown:txtmark:0.16")
+    implementation(jxbrowser.core)
+    implementation(jxbrowser.crossPlatform)
+    implementation(jxbrowser.swing)
 }
 
 // Configure Gradle IntelliJ Plugin

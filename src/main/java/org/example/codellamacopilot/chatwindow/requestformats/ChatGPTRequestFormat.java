@@ -17,6 +17,7 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
 
     private final String API_URL = "https://api.openai.com/v1/chat/completions";
 
+    //Chat history
     List<MessageObject> messages = new ArrayList<>() {
         {
             add(new MessageObject("system", "You are a java assistant, skilled in explaining complex programming concepts."));
@@ -56,6 +57,12 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
         }
         response = responseObject.getChoices()[0].getMessage().getContent();
         messages.add(new MessageObject("assistant", response));
+
+        //Remove the first message and response from the server to keep the chat history clean
+        if(messages.size() > 20){
+            messages.remove(1);
+            messages.remove(2);
+        }
         return response;
     }
 
