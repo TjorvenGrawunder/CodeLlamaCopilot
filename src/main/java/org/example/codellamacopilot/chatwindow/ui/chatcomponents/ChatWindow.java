@@ -13,6 +13,9 @@ import com.intellij.ui.components.JBScrollPane;
 
 import com.intellij.ui.components.fields.ExpandableTextField;
 import com.intellij.ui.components.fields.ExtendableTextComponent;
+import com.intellij.util.ui.ExtendableHTMLViewFactory;
+import com.intellij.util.ui.HTMLEditorKitBuilder;
+import com.intellij.util.ui.JBHtmlEditorKit;
 import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.engine.Engine;
 import com.teamdev.jxbrowser.engine.EngineOptions;
@@ -29,6 +32,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import javax.swing.*;
+import javax.swing.text.View;
 
 import java.awt.*;
 
@@ -90,12 +94,6 @@ public class ChatWindow {
         messagePanel.add(chatElement);
         messagePanel.revalidate();
 
-        Engine engine = Engine.newInstance(
-                EngineOptions.newBuilder(HARDWARE_ACCELERATED).build());
-        Browser browser = engine.newBrowser();
-        BrowserView view = BrowserView.newInstance(browser);
-        messagePanel.add(view, BorderLayout.CENTER);
-
         boolean skipResponse = false;
         String response;
         if(message.equals("\\debug")){
@@ -110,25 +108,14 @@ public class ChatWindow {
         }
 
         if(!skipResponse){
-            Parser parser = Parser.builder().build();
-            Document document = parser.parse(response);
-            HtmlRenderer renderer = HtmlRenderer.builder().build();
-            org.jsoup.nodes.Document doc = Jsoup.parse(renderer.render(document));
+            String[] codeParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
+            /*for(String codePart: codeParts){
+                if (codePart.startsWith("```java")) {
+                    codePart += "```";
+                }
+            }*/
 
-            //Highlight code blocks
-            highlightCodeBlocks(doc, project);
-
-            JTextPane textPane = new JTextPane();
-            textPane.setContentType("text/html");
-            String html = doc.html();
-            textPane.setText(html);
-            textPane.setFont(new Font("Arial", Font.PLAIN, 14));
-            textPane.setEditable(false);
-            textPane.setOpaque(true);
-
-            textPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-            messagePanel.add(textPane);
+            messagePanel.add(new ChatResponseField(codeParts, project, this));
             messagePanel.revalidate();
 
         }
@@ -138,17 +125,9 @@ public class ChatWindow {
 
     }
 
-    private void highlightCodeBlocks(org.jsoup.nodes.Document doc, Project project) {
-        //Get all code blocks
-        Elements codeBlocks = doc.select("code");
-        //Remove code blocks that are too short
-        codeBlocks.removeIf(element -> element.text().length() < 50);
-
-        for (Element codeBlock : codeBlocks) {
-            String code = codeBlock.text();
-            //Highlight code block
-            HtmlChunk highlightedCode = HtmlSyntaxHighlighter.Companion.colorHtmlChunk(project, Language.findLanguageByID("JAVA"), code);
-            codeBlock.html(highlightedCode.toString());
-        }
+    public void sendChatAlert(String message) {
+        // Send chat alert
+        message = "<font color=\"red\">" + message + "</font>";
+        sendMessage(message);
     }
 }
