@@ -33,16 +33,18 @@ public class ChatCodeField extends JPanel {
         buttonPanel.setLayout(new FlowLayout());
 
         buttonPanel.add(copyButton);
-        buttonPanel.add(createClassButton);
+        String code = html.text();
+        if(code.contains("class")){
+            buttonPanel.add(createClassButton);
+        }
 
         copyButton.addActionListener(e -> {
-            StringSelection stringSelection = new StringSelection(html.text());
+            StringSelection stringSelection = new StringSelection(code);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, null);
         });
 
         createClassButton.addActionListener(e -> {
-            String code = html.text();
             // Create class from code
             createClassFile(code);
         });
