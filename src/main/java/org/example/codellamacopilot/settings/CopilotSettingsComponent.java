@@ -1,14 +1,21 @@
 package org.example.codellamacopilot.settings;
 
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.ui.JBCardLayout;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.util.ui.FormBuilder;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
+import org.example.codellamacopilot.chatwindow.ui.customcomponents.ParametrizedJPanel;
 import org.example.codellamacopilot.llamaconnection.HuggingFaceRequestFormat;
 import org.example.codellamacopilot.llamaconnection.RequestFormat;
+import org.example.codellamacopilot.settings.modelsettings.chatsettings.ChatGPTSpecificSettings;
+import org.example.codellamacopilot.settings.modelsettings.chatsettings.ChatModelSpecificSettings;
+import org.example.codellamacopilot.settings.modelsettings.completionsettings.CompletionModelSpecificSettings;
+import org.example.codellamacopilot.settings.modelsettings.completionsettings.HuggingFaceSpecificSettings;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -17,6 +24,8 @@ public class CopilotSettingsComponent {
 
     //Components
     private final JPanel MAIN_PANEL;
+    private final JPanel CHAT_SETTINGS_PANEL = new JPanel(new JBCardLayout());
+    private final JPanel COMPLETION_SETTINGS_PANEL = new JPanel(new JBCardLayout());
     private final JBPasswordField HUGGING_FACE_API_TOKEN_TEXT_FIELD = new JBPasswordField();
     private final JBPasswordField CHAT_GPT_API_TOKEN_TEXT_FIELD = new JBPasswordField();
     private final ComboBox<RequestFormat> COMPLETION_MODEL_COMBO_BOX = new ComboBox<>();
@@ -32,6 +41,8 @@ public class CopilotSettingsComponent {
     public CopilotSettingsComponent() {
         COMPLETION_MODEL_COMBO_BOX.addItem(huggingFaceRequestFormat);
         CHAT_MODEL_COMBO_BOX.addItem(chatGPTRequestFormat);
+        //COMPLETION_SETTINGS_PANEL.add(new HuggingFaceSpecificSettings(), huggingFaceRequestFormat.toString());
+        //CHAT_SETTINGS_PANEL.add(new ChatGPTSpecificSettings(), chatGPTRequestFormat.toString());
         MAIN_PANEL = FormBuilder.createFormBuilder()
                 .addComponent(USE_COMPLETION_CHECKBOX, 1)
                 .addLabeledComponent(new JBLabel("Enter huggingface api token: "), HUGGING_FACE_API_TOKEN_TEXT_FIELD, 1, false)
@@ -40,6 +51,12 @@ public class CopilotSettingsComponent {
                 .addLabeledComponent(new JBLabel("Select chat model: "), CHAT_MODEL_COMBO_BOX, 1, false)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
+        /*MAIN_PANEL = FormBuilder.createFormBuilder()
+                .addComponent(USE_COMPLETION_CHECKBOX, 1)
+                .addComponent(COMPLETION_SETTINGS_PANEL, 1)
+                .addComponent(CHAT_SETTINGS_PANEL, 1)
+                .addComponentFillVertically(new JPanel(), 0)
+                .getPanel();*/
     }
 
 
@@ -56,11 +73,17 @@ public class CopilotSettingsComponent {
     }
 
     public RequestFormat getSelectedCompletionModel() {
-        return COMPLETION_MODEL_COMBO_BOX.getItemAt(COMPLETION_MODEL_COMBO_BOX.getSelectedIndex());
+        //CompletionModelSpecificSettings completionModelSpecificSettings = (CompletionModelSpecificSettings) COMPLETION_SETTINGS_PANEL.getComponent(COMPLETION_MODEL_COMBO_BOX.getSelectedIndex());
+        //RequestFormat completionRequestFormat = completionModelSpecificSettings.getCompletionRequestFormat();
+        RequestFormat completionRequestFormat = (RequestFormat) COMPLETION_MODEL_COMBO_BOX.getSelectedItem();
+        return completionRequestFormat;
     }
 
     public ChatRequestFormat getSelectedChatModel() {
-        return CHAT_MODEL_COMBO_BOX.getItemAt(CHAT_MODEL_COMBO_BOX.getSelectedIndex());
+        //ChatModelSpecificSettings chatModelSpecificSettings = (ChatModelSpecificSettings) CHAT_SETTINGS_PANEL.getComponent(CHAT_MODEL_COMBO_BOX.getSelectedIndex());
+        //ChatRequestFormat chatRequestFormat = chatModelSpecificSettings.getChatRequestFormat();
+        ChatRequestFormat chatRequestFormat = (ChatRequestFormat) CHAT_MODEL_COMBO_BOX.getSelectedItem();
+        return chatRequestFormat;
     }
 
     @NotNull

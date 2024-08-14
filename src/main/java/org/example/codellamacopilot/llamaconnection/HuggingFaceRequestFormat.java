@@ -19,7 +19,19 @@ import java.util.List;
 
 public class HuggingFaceRequestFormat implements RequestFormat, Serializable {
 
-    private final String API_URL = "https://api-inference.huggingface.co/models/codellama/CodeLlama-13b-hf";
+    private final StringBuilder API_URL = new StringBuilder("https://api-inference.huggingface.co/models/");
+    private boolean appended = false;
+
+    public HuggingFaceRequestFormat() {
+        API_URL.append("codellama/CodeLlama-7b-hf");
+        appended = true;
+    }
+
+    public HuggingFaceRequestFormat(String model) {
+        API_URL.append(model);
+        appended = true;
+    }
+
 
     @Override
     public HttpRequest getRequest(CodeSnippet code) {
@@ -59,7 +71,7 @@ public class HuggingFaceRequestFormat implements RequestFormat, Serializable {
 
         try {
             return HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL))
+                    .uri(URI.create(API_URL.toString()))
                     .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestObject)))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + apiToken).build();
@@ -68,8 +80,17 @@ public class HuggingFaceRequestFormat implements RequestFormat, Serializable {
         }
     }
 
+    public void setModel(String model) {
+        if (appended) {
+            API_URL.delete(0, API_URL.length());
+            appended = false;
+        }
+        API_URL.append("https://api-inference.huggingface.co/models/").append(model);
+        appended = true;
+    }
+
     @Override
     public String toString() {
-        return "CodeLlama-7b-hf";
+        return "HuggingFace";
     }
 }
