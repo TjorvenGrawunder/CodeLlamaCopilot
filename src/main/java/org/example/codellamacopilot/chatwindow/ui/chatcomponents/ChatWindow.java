@@ -25,7 +25,10 @@ import org.example.codellamacopilot.chatwindow.api.ChatClient;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
+import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistory;
+import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
+import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -41,7 +44,7 @@ import static com.teamdev.jxbrowser.engine.RenderingMode.HARDWARE_ACCELERATED;
 public class ChatWindow {
     private JPanel mainPanel;
     private JPanel messagePanel;
-    private JScrollPane scrollPane;
+    private JBScrollPane scrollPane;
     private ExpandableTextField inputField;
     private ChatClient chatClient;
     private Project project;
@@ -77,12 +80,17 @@ public class ChatWindow {
                 ApplicationManager.getApplication().invokeLater(() -> {
                     inputField.removeExtension(inputField.getExtensions().get(inputField.getExtensions().size() - 1));
                     inputField.setEnabled(true);
+
+                    //Scroll to the bottom of the chat
+                    JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                    vertical.setValue(vertical.getMaximum());
                 });
             });
         });
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(inputField, BorderLayout.SOUTH);
+        initChatMessages();
     }
 
     public JComponent getContent() {
@@ -93,6 +101,12 @@ public class ChatWindow {
         ChatElement chatElement = new ChatElement(message);
         messagePanel.add(chatElement);
         messagePanel.revalidate();
+
+        //Scroll to the bottom of the chat
+        ApplicationManager.getApplication().invokeLater(() -> {
+            JScrollBar vertical = scrollPane.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
+        });
 
         boolean skipResponse = false;
         String response;
@@ -120,8 +134,32 @@ public class ChatWindow {
 
         }
 
-        JScrollBar vertical = scrollPane.getVerticalScrollBar();
-        vertical.setValue(vertical.getMaximum());
+    }
+
+    private void initChatMessages() {
+        ChatHistoryManipulator chatHistoryManipulator = new ChatHistoryManipulator();
+        if(chatHistoryManipulator.getMessages().size() == 1) {
+            // Initialize chat messages
+            ChatElement chatElement = new ChatElement("Hello! I'm your personal programming assistant. How can I help you today?");
+            messagePanel.add(chatElement);
+        }
+        for (MessageObject message : chatHistoryManipulator.getMessages()) {
+            if(message.getRole().equals("user")) {
+                ChatElement chatElement = new ChatElement(message.getContent());
+                messagePanel.add(chatElement);
+            }else if (message.getRole().equals("assistant")) {
+                String[] codeParts = message.getContent().split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
+                ChatResponseField chatResponseField = new ChatResponseField(codeParts, project, this);
+                messagePanel.add(chatResponseField);
+            }
+            messagePanel.revalidate();
+
+            //Scroll to the bottom of the chat
+            ApplicationManager.getApplication().invokeLater(() -> {
+                JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
+            });
+        }
 
     }
 

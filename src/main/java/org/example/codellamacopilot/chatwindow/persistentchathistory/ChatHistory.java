@@ -1,7 +1,10 @@
 package org.example.codellamacopilot.chatwindow.persistentchathistory;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.util.xmlb.annotations.Attribute;
+import com.intellij.openapi.components.Service;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,21 +12,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatHistory implements PersistentStateComponent<ChatHistory.ChatHistoryState> {
+@Service
+@State(
+        name = "org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistory",
+        storages = @Storage("ChatHistory.xml")
+)
+public final class ChatHistory implements PersistentStateComponent<ChatHistory.ChatHistoryState> {
 
-
-    static class ChatHistoryState {
-        //Chat history
-        public List<MessageObject> messages;
-
-        public ChatHistoryState(){
-            messages = new ArrayList<>() {
-                {
-                    add(new MessageObject("system", "You are a java assistant, skilled in explaining complex programming concepts."));
-                }
-            };
-        }
-    }
 
     private ChatHistoryState state = new ChatHistoryState();
 
@@ -37,14 +32,20 @@ public class ChatHistory implements PersistentStateComponent<ChatHistory.ChatHis
         this.state = state;
     }
 
-    public void addMessage(MessageObject message) {
-        if(state.messages.size() > 50){
-            state.messages.remove(1);
-        }
-        state.messages.add(message);
+    public static ChatHistory getInstance() {
+        return ApplicationManager.getApplication().getService(ChatHistory.class);
     }
 
-    public List<MessageObject> getMessages() {
-        return state.messages;
+    static class ChatHistoryState {
+        //Chat history
+        public List<MessageObject> messages;
+
+        public ChatHistoryState() {
+            messages = new ArrayList<>() {
+                {
+                    add(new MessageObject("system", "You are a java assistant, skilled in explaining complex programming concepts."));
+                }
+            };
+        }
     }
 }

@@ -3,6 +3,7 @@ package org.example.codellamacopilot.chatwindow.requestformats;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
 import org.example.codellamacopilot.chatwindow.requestobjects.chatgpt.ChatGPTRequestObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTResponseObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
@@ -17,7 +18,8 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
     private final String API_URL = "https://api.openai.com/v1/chat/completions";
 
     //Chat history
-    ChatHistory chatHistory = new ChatHistory();
+    ChatHistoryManipulator chatHistory = new ChatHistoryManipulator();
+
 
     @Override
     public HttpRequest getRequest(String message) {

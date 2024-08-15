@@ -25,6 +25,8 @@
         <inline.completion.provider implementation="org.example.codellamacopilot.completionutil.CodeLlamaCompletionProvider"/>
         <applicationService
                 serviceImplementation="org.example.codellamacopilot.settings.CopilotSettingsState"/>
+        <applicationService
+                serviceImplementation="org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistory"/>
         <applicationConfigurable
                 parentId="tools"
                 instance="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
