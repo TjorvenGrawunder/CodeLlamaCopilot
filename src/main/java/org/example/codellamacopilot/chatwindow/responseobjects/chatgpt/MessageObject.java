@@ -3,8 +3,10 @@ package org.example.codellamacopilot.chatwindow.responseobjects.chatgpt;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MessageObject {
+public class MessageObject implements Serializable {
     private String role;
     private String content;
 
@@ -35,4 +37,8 @@ public class MessageObject {
         this.content = content;
     }
 
+    @Override
+    public String toString() {
+        return role + ":" + content;
+    }
 }

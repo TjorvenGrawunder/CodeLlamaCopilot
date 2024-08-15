@@ -6,31 +6,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.codellamacopilot.chatwindow.requestobjects.chatgpt.ChatGPTRequestObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTResponseObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
+import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistory;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ChatGPTRequestFormat implements ChatRequestFormat {
 
     private final String API_URL = "https://api.openai.com/v1/chat/completions";
 
     //Chat history
-    List<MessageObject> messages = new ArrayList<>() {
-        {
-            add(new MessageObject("system", "You are a java assistant, skilled in explaining complex programming concepts."));
-            //add(new MessageObject("system", "You are a java programmer, skilled in programming. You are not allowed to write other text than Code."));
-        }
-    };
+    ChatHistory chatHistory = new ChatHistory();
 
     @Override
     public HttpRequest getRequest(String message) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        messages.add(new MessageObject("user", message));
-        ChatGPTRequestObject requestObject = new ChatGPTRequestObject("gpt-4o-mini", messages);
+        chatHistory.addMessage(new MessageObject("user", message));
+        ChatGPTRequestObject requestObject = new ChatGPTRequestObject("gpt-4o-mini", chatHistory.getMessages());
 
         String apiToken = CopilotSettingsState.getInstance().chatApiToken;
 
@@ -56,13 +50,8 @@ public class ChatGPTRequestFormat implements ChatRequestFormat {
             throw new RuntimeException(e);
         }
         response = responseObject.getChoices()[0].getMessage().getContent();
-        messages.add(new MessageObject("assistant", response));
+        chatHistory.addMessage(new MessageObject("assistant", response));
 
-        //Remove the first message and response from the server to keep the chat history clean
-        if(messages.size() > 20){
-            messages.remove(1);
-            messages.remove(2);
-        }
         return response;
     }
 
