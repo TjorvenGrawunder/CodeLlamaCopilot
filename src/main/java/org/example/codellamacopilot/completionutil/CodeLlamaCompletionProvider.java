@@ -11,7 +11,7 @@ import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 import kotlinx.coroutines.flow.FlowKt;
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
-import org.example.codellamacopilot.llamaconnection.LLMClient;
+import org.example.codellamacopilot.llamaconnection.CompletionClient;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.example.codellamacopilot.util.CodeSnippet;
 import org.example.codellamacopilot.util.CommentCodeSnippetTuple;
@@ -25,7 +25,7 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
     @Nullable
     @Override
     public Object getProposals(@NotNull InlineCompletionRequest inlineCompletionRequest, @NotNull Continuation<? super Flow<InlineCompletionElement>> continuation) {
-        LLMClient client = new LLMClient(CopilotSettingsState.getInstance().usedModel);
+        CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().usedModel);
         ChatClient chatClient = new ChatClient(inlineCompletionRequest.getEditor().getProject(), CopilotSettingsState.getInstance().usedChatModel, false);
         Project currentProject = inlineCompletionRequest.getEditor().getProject();
         String response = "";

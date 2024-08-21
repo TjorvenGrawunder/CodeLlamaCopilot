@@ -1,9 +1,8 @@
 package org.example.codellamacopilot.settings.modelsettings.completionsettings;
 
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.ui.components.JBPanel;
 import org.example.codellamacopilot.llamaconnection.HuggingFaceRequestFormat;
-import org.example.codellamacopilot.llamaconnection.RequestFormat;
+import org.example.codellamacopilot.llamaconnection.CompletionRequestFormat;
 
 import javax.swing.*;
 
@@ -22,7 +21,7 @@ public class HuggingFaceSpecificSettings extends CompletionModelSpecificSettings
     }
 
     @Override
-    public RequestFormat getCompletionRequestFormat() {
+    public CompletionRequestFormat getCompletionRequestFormat() {
         return new HuggingFaceRequestFormat(completionModelComboBox.getSelectedItem().toString());
     }
 

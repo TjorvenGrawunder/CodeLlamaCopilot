@@ -23,6 +23,7 @@ public class ChatCodeField extends JPanel {
     public ChatCodeField(Document html, Project project, ChatWindow chatWindow) {
         super();
         this.PROJECT = project;
+        this.chatWindow = chatWindow;
         this.setLayout(new BorderLayout());
         JTextPane textPane = new JTextPane();
 

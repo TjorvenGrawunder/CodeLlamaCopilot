@@ -17,7 +17,7 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.util.List;
 
-public class HuggingFaceRequestFormat implements RequestFormat, Serializable {
+public class HuggingFaceRequestFormat implements CompletionRequestFormat, Serializable {
 
     private final StringBuilder API_URL = new StringBuilder("https://api-inference.huggingface.co/models/");
     private boolean appended = false;

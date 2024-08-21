@@ -4,18 +4,12 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBCardLayout;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.util.ui.FormBuilder;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
-import org.example.codellamacopilot.chatwindow.ui.customcomponents.ParametrizedJPanel;
 import org.example.codellamacopilot.llamaconnection.HuggingFaceRequestFormat;
-import org.example.codellamacopilot.llamaconnection.RequestFormat;
-import org.example.codellamacopilot.settings.modelsettings.chatsettings.ChatGPTSpecificSettings;
-import org.example.codellamacopilot.settings.modelsettings.chatsettings.ChatModelSpecificSettings;
-import org.example.codellamacopilot.settings.modelsettings.completionsettings.CompletionModelSpecificSettings;
-import org.example.codellamacopilot.settings.modelsettings.completionsettings.HuggingFaceSpecificSettings;
+import org.example.codellamacopilot.llamaconnection.CompletionRequestFormat;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -28,12 +22,12 @@ public class CopilotSettingsComponent {
     private final JPanel COMPLETION_SETTINGS_PANEL = new JPanel(new JBCardLayout());
     private final JBPasswordField HUGGING_FACE_API_TOKEN_TEXT_FIELD = new JBPasswordField();
     private final JBPasswordField CHAT_GPT_API_TOKEN_TEXT_FIELD = new JBPasswordField();
-    private final ComboBox<RequestFormat> COMPLETION_MODEL_COMBO_BOX = new ComboBox<>();
+    private final ComboBox<CompletionRequestFormat> COMPLETION_MODEL_COMBO_BOX = new ComboBox<>();
     private final ComboBox<ChatRequestFormat> CHAT_MODEL_COMBO_BOX = new ComboBox<>();
     private final JBCheckBox USE_COMPLETION_CHECKBOX = new JBCheckBox("Use completion");
 
     //Completion Request Formats
-    private final RequestFormat huggingFaceRequestFormat = new HuggingFaceRequestFormat();
+    private final CompletionRequestFormat huggingFaceRequestFormat = new HuggingFaceRequestFormat();
 
     //Chat Request Formats
     private final ChatRequestFormat chatGPTRequestFormat = new ChatGPTRequestFormat();
@@ -68,14 +62,14 @@ public class CopilotSettingsComponent {
         return HUGGING_FACE_API_TOKEN_TEXT_FIELD;
     }
 
-    public ComboBox<RequestFormat> getModelComboBox() {
+    public ComboBox<CompletionRequestFormat> getModelComboBox() {
         return COMPLETION_MODEL_COMBO_BOX;
     }
 
-    public RequestFormat getSelectedCompletionModel() {
+    public CompletionRequestFormat getSelectedCompletionModel() {
         //CompletionModelSpecificSettings completionModelSpecificSettings = (CompletionModelSpecificSettings) COMPLETION_SETTINGS_PANEL.getComponent(COMPLETION_MODEL_COMBO_BOX.getSelectedIndex());
         //RequestFormat completionRequestFormat = completionModelSpecificSettings.getCompletionRequestFormat();
-        RequestFormat completionRequestFormat = (RequestFormat) COMPLETION_MODEL_COMBO_BOX.getSelectedItem();
+        CompletionRequestFormat completionRequestFormat = (CompletionRequestFormat) COMPLETION_MODEL_COMBO_BOX.getSelectedItem();
         return completionRequestFormat;
     }
 
@@ -103,7 +97,7 @@ public class CopilotSettingsComponent {
         CHAT_GPT_API_TOKEN_TEXT_FIELD.setText(newText);
     }
 
-    public void setSelectedModel(@NotNull RequestFormat model) {
+    public void setSelectedModel(@NotNull CompletionRequestFormat model) {
         COMPLETION_MODEL_COMBO_BOX.setSelectedItem(model);
     }
 

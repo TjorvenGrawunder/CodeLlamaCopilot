@@ -7,7 +7,7 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
-import org.example.codellamacopilot.llamaconnection.RequestFormat;
+import org.example.codellamacopilot.llamaconnection.CompletionRequestFormat;
 import org.example.codellamacopilot.persistentconverter.ChatRequestFormatConverter;
 import org.example.codellamacopilot.persistentconverter.RequestFormatConverter;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 public final class CopilotSettingsState implements PersistentStateComponent<CopilotSettingsState> {
 
     @OptionTag(converter = RequestFormatConverter.class)
-    public RequestFormat usedModel;
+    public CompletionRequestFormat usedModel;
     @OptionTag(converter = ChatRequestFormatConverter.class)
     public ChatRequestFormat usedChatModel;
     public String apiToken;

@@ -1,22 +1,19 @@
 package org.example.codellamacopilot.llamaconnection;
 
-import com.fasterxml.jackson.jr.ob.JSON;
-import com.intellij.openapi.progress.ProgressManager;
 import org.example.codellamacopilot.util.CodeSnippet;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 
-public class LLMClient {
+public class CompletionClient {
 
-    private final RequestFormat REQUEST_FORMAT;
+    private final CompletionRequestFormat REQUEST_FORMAT;
     private final HttpClient CLIENT;
 
-    public LLMClient(RequestFormat requestFormat) {
-        this.REQUEST_FORMAT = requestFormat;
+    public CompletionClient(CompletionRequestFormat completionRequestFormat) {
+        this.REQUEST_FORMAT = completionRequestFormat;
         this.CLIENT = HttpClient.newHttpClient();
     }
 

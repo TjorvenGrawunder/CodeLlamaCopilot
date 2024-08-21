@@ -2,14 +2,14 @@ package org.example.codellamacopilot.persistentconverter;
 
 import com.intellij.util.xmlb.Converter;
 import org.example.codellamacopilot.llamaconnection.HuggingFaceRequestFormat;
-import org.example.codellamacopilot.llamaconnection.RequestFormat;
+import org.example.codellamacopilot.llamaconnection.CompletionRequestFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RequestFormatConverter extends Converter<RequestFormat> {
+public class RequestFormatConverter extends Converter<CompletionRequestFormat> {
 
     @Override
-    public @Nullable RequestFormat fromString(@NotNull String value) {
+    public @Nullable CompletionRequestFormat fromString(@NotNull String value) {
         if (value.equals("HuggingFace")) {
             return new HuggingFaceRequestFormat();
         }else{
@@ -18,7 +18,7 @@ public class RequestFormatConverter extends Converter<RequestFormat> {
     }
 
     @Override
-    public @Nullable String toString(@NotNull RequestFormat value) {
+    public @Nullable String toString(@NotNull CompletionRequestFormat value) {
         return value.toString();
     }
 }

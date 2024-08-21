@@ -123,14 +123,14 @@ public class ChatWindow {
         }
 
         if(!skipResponse){
-            String[] codeParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
+            String[] messageParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
             /*for(String codePart: codeParts){
                 if (codePart.startsWith("```java")) {
                     codePart += "```";
                 }
             }*/
 
-            messagePanel.add(new ChatResponseField(codeParts, project, this));
+            messagePanel.add(new ChatResponseField(messageParts, project, this));
             messagePanel.revalidate();
 
         }
@@ -149,8 +149,8 @@ public class ChatWindow {
                 ChatElement chatElement = new ChatElement(message.getContent());
                 messagePanel.add(chatElement);
             }else if (message.getRole().equals("assistant")) {
-                String[] codeParts = message.getContent().split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
-                ChatResponseField chatResponseField = new ChatResponseField(codeParts, project, this);
+                String[] messageParts = message.getContent().split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
+                ChatResponseField chatResponseField = new ChatResponseField(messageParts, project, this);
                 messagePanel.add(chatResponseField);
             }
             messagePanel.revalidate();
