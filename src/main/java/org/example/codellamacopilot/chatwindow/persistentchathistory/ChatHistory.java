@@ -37,15 +37,18 @@ public final class ChatHistory implements PersistentStateComponent<ChatHistory.C
     }
 
     static class ChatHistoryState {
+        //System prompts
+        public List<MessageObject> systemPrompts;
         //Chat history
         public List<MessageObject> messages;
 
         public ChatHistoryState() {
-            messages = new ArrayList<>() {
+            systemPrompts = new ArrayList<>() {
                 {
                     add(new MessageObject("system", "You are a java assistant, skilled in explaining complex programming concepts."));
                 }
             };
+            messages = new ArrayList<>();
         }
     }
 }

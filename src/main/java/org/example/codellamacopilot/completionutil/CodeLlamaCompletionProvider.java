@@ -25,7 +25,7 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
     @Override
     public Object getProposals(@NotNull InlineCompletionRequest inlineCompletionRequest, @NotNull Continuation<? super Flow<InlineCompletionElement>> continuation) {
         LLMClient client = new LLMClient(CopilotSettingsState.getInstance().usedModel);
-        ChatClient chatClient = new ChatClient(inlineCompletionRequest.getEditor().getProject(), CopilotSettingsState.getInstance().usedChatModel);
+        ChatClient chatClient = new ChatClient(inlineCompletionRequest.getEditor().getProject(), CopilotSettingsState.getInstance().usedChatModel, false);
         Project currentProject = inlineCompletionRequest.getEditor().getProject();
         String response = "";
         if (currentProject != null) {
@@ -42,15 +42,14 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
                 while (!foundComment && currentLine > 0) {
                     ProgressManager.checkCanceled();
                     comment = document.getCharsSequence().subSequence(document.getLineStartOffset(currentLine), document.getLineEndOffset(currentLine)).toString();
-                    if (comment.trim().startsWith("//") || comment.trim().startsWith("/*")) {
+                    if (comment.trim().startsWith("//") || comment.trim().startsWith("/*") || comment.trim().startsWith("/**")) {
                         foundComment = true;
-                        comment = comment.substring(comment.indexOf("//") + 2);
                     } else if (comment.trim().startsWith("*") && comment.trim().endsWith("*/")) {
                         int multiLineCommentEnd = currentLine;
-                        while (currentLine > 0 && !comment.trim().startsWith("*")) {
+                        while (currentLine > 0 && comment.trim().startsWith("*")) {
                             currentLine--;
-                            comment = document.getCharsSequence().subSequence(document.getLineStartOffset(currentLine), document.getLineEndOffset(multiLineCommentEnd)).toString();
                         }
+                        comment = document.getCharsSequence().subSequence(document.getLineStartOffset(currentLine), document.getLineEndOffset(multiLineCommentEnd)).toString();
                     } else if (comment.trim().isEmpty()) {
                         currentLine--;
                     } else {
@@ -65,8 +64,9 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
                 if(commentPromise.get() != null && !commentPromise.get().isEmpty()){
                     try {
                         ProgressManager.checkCanceled();
-                        response = chatClient.sendMessage("Please provide a method in java that implements the " +
-                                "following comment. Only provide code and dont use markdown. " +
+                        response = chatClient.sendMessage("Please implement the " +
+                                "following comment in java. Please pay attention to the given background information." +
+                                " Only provide code and dont use markdown. " +
                                 "Comment:" + commentPromise.get());
                         ProgressManager.checkCanceled();
                     } catch (InterruptedException e) {

@@ -20,6 +20,7 @@ import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.engine.Engine;
 import com.teamdev.jxbrowser.engine.EngineOptions;
 import com.teamdev.jxbrowser.view.swing.BrowserView;
+
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -54,7 +55,7 @@ public class ChatWindow {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        this.chatClient = new ChatClient(this.project, CopilotSettingsState.getInstance().usedChatModel);
+        this.chatClient = new ChatClient(this.project, CopilotSettingsState.getInstance().usedChatModel, true);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
@@ -138,7 +139,7 @@ public class ChatWindow {
 
     private void initChatMessages() {
         ChatHistoryManipulator chatHistoryManipulator = new ChatHistoryManipulator();
-        if(chatHistoryManipulator.getMessages().size() == 1) {
+        if(chatHistoryManipulator.getMessages().size() == 1 + chatHistoryManipulator.getContextCounter()) {
             // Initialize chat messages
             ChatElement chatElement = new ChatElement("Hello! I'm your personal programming assistant. How can I help you today?");
             messagePanel.add(chatElement);

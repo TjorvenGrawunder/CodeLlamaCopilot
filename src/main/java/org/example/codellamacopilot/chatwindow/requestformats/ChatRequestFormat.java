@@ -1,7 +1,7 @@
 package org.example.codellamacopilot.chatwindow.requestformats;
 
-import org.example.codellamacopilot.util.CodeSnippet;
-
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
 import java.io.IOException;
 import java.net.http.HttpRequest;
 
@@ -20,4 +20,17 @@ public interface ChatRequestFormat {
      * @throws IOException
      */
     String parseResponse(String response) throws IOException;
+
+    /**
+     * Get a new instance of the ChatRequestFormat
+     * @return a new instance of the ChatRequestFormat
+     */
+    ChatRequestFormat getNewInstance(boolean persistentChatHistory);
+
+    /**
+     * Add the code context of the current project to the chat history
+     * @param project the current project
+     */
+    void addCodeContext(Project project);
+
 }

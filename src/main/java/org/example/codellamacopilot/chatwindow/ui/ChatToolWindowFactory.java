@@ -46,7 +46,7 @@ public class ChatToolWindowFactory implements ToolWindowFactory {
         private final JLabel CHAT_TITLE = new JBLabel("CodeLlama copilot chat");
 
         public ChatToolWindowContent(ToolWindow toolWindow, Project project) {
-            this.chatClient = new ChatClient(project, new ChatGPTRequestFormat());
+            this.chatClient = new ChatClient(project, new ChatGPTRequestFormat(), true);
             //CHAT_MESSAGE_AREA.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
             //CHAT_MESSAGE_AREA.setCodeFoldingEnabled(true);
             BASE_PANEL.setLayout(new BorderLayout(0, 0));
