@@ -14,6 +14,7 @@ import org.example.codellamacopilot.chatwindow.api.ChatClient;
 import org.example.codellamacopilot.llamaconnection.LLMClient;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.example.codellamacopilot.util.CodeSnippet;
+import org.example.codellamacopilot.util.CommentCodeSnippetTuple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.concurrency.CancellablePromise;
@@ -33,10 +34,11 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
             CaretModel caretModel = inlineCompletionRequest.getEditor().getCaretModel();
 
 
-            CancellablePromise<String> commentPromise = ReadAction.nonBlocking(() -> {
+            CancellablePromise<CommentCodeSnippetTuple> commentPromise = ReadAction.nonBlocking(() -> {
                 ProgressManager.checkCanceled();
                 int currentOffset = caretModel.getOffset();
                 int currentLine = document.getLineNumber(currentOffset);
+                int lineSize = 0;
                 boolean foundComment = false;
                 String comment = "";
                 while (!foundComment && currentLine > 0) {
@@ -48,6 +50,7 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
                         int multiLineCommentEnd = currentLine;
                         while (currentLine > 0 && comment.trim().startsWith("*")) {
                             currentLine--;
+                            lineSize++;
                         }
                         comment = document.getCharsSequence().subSequence(document.getLineStartOffset(currentLine), document.getLineEndOffset(multiLineCommentEnd)).toString();
                     } else if (comment.trim().isEmpty()) {
@@ -57,17 +60,24 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
                         break;
                     }
                 }
-                return comment;
+                CodeSnippet codeSnippet = new CodeSnippet(document.getCharsSequence().subSequence(document.getLineStartOffset(0), document.getLineStartOffset(currentLine)).toString(),
+                        document.getCharsSequence().subSequence(document.getLineStartOffset(currentLine + lineSize), document.getLineEndOffset(document.getLineCount()-1)).toString());
+                return new CommentCodeSnippetTuple(comment, codeSnippet);
             }).expireWith(CodeLlamaCopilotPluginDisposable.getInstance()).submit(AppExecutorUtil.getAppExecutorService());
 
             try {
-                if(commentPromise.get() != null && !commentPromise.get().isEmpty()){
+                if(commentPromise.get() != null){
                     try {
                         ProgressManager.checkCanceled();
-                        response = chatClient.sendMessage("Please implement the " +
-                                "following comment in java. Please pay attention to the given background information." +
-                                " Only provide code and dont use markdown. " +
-                                "Comment:" + commentPromise.get());
+                        CommentCodeSnippetTuple commentCodeSnippetTuple = commentPromise.get();
+                        String message = String.format("""
+                                Please implement the \
+                                following comment in java. Please pay attention to the given background information.\
+                                 Only provide your new code without prefix, suffix and the given comment and dont use markdown. \
+                                Comment: %s\s
+                                 Prefix: %s\s
+                                 Suffix: %s""", commentCodeSnippetTuple.getComment(), commentCodeSnippetTuple.getCodeSnippet().prefix(), commentCodeSnippetTuple.getCodeSnippet().suffix());
+                        response = chatClient.sendMessage( message);
                         ProgressManager.checkCanceled();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
