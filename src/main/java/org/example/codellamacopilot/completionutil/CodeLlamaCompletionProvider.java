@@ -67,7 +67,7 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
             }).expireWith(CodeLlamaCopilotPluginDisposable.getInstance()).submit(AppExecutorUtil.getAppExecutorService());
 
             try {
-                if(commentPromise.get() != null){
+                if(commentPromise.get() != null && !commentPromise.get().getComment().isEmpty()){
                     try {
                         ProgressManager.checkCanceled();
                         CommentCodeSnippetTuple commentCodeSnippetTuple = commentPromise.get();
