@@ -1,6 +1,7 @@
 package org.example.codellamacopilot.completionutil;
 
-import com.intellij.codeInsight.inline.completion.*;
+import com.intellij.codeInsight.inline.completion.InlineCompletionElement;
+import com.intellij.codeInsight.inline.completion.InlineCompletionRequest;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
@@ -16,23 +17,26 @@ import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.example.codellamacopilot.util.CodeSnippet;
 import org.example.codellamacopilot.util.CommentCodeSnippetTuple;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.concurrency.CancellablePromise;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-@Deprecated
-public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
-    @Nullable
-    @Override
-    public Object getProposals(@NotNull InlineCompletionRequest inlineCompletionRequest, @NotNull Continuation<? super Flow<InlineCompletionElement>> continuation) {
+public class InlineCompletionMethods {
+    private final InlineCompletionRequest INLINE_COMPLETION_REQUEST;
+    public InlineCompletionMethods(InlineCompletionRequest inlineCompletionRequest) {
+        this.INLINE_COMPLETION_REQUEST = inlineCompletionRequest;
+    }
+
+    public Flow<InlineCompletionElement> getProposals() {
+        System.out.println("InlineCompletionMethods.getProposals");
         CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().usedModel);
-        ChatClient chatClient = new ChatClient(inlineCompletionRequest.getEditor().getProject(), CopilotSettingsState.getInstance().usedChatModel, false);
-        Project currentProject = inlineCompletionRequest.getEditor().getProject();
+        ChatClient chatClient = new ChatClient(INLINE_COMPLETION_REQUEST.getEditor().getProject(), CopilotSettingsState.getInstance().usedChatModel, false);
+        Project currentProject = INLINE_COMPLETION_REQUEST.getEditor().getProject();
         String response = "";
         if (currentProject != null) {
-            Document document = inlineCompletionRequest.getDocument();
-            CaretModel caretModel = inlineCompletionRequest.getEditor().getCaretModel();
+            Document document = INLINE_COMPLETION_REQUEST.getDocument();
+            CaretModel caretModel = INLINE_COMPLETION_REQUEST.getEditor().getCaretModel();
 
 
             CancellablePromise<CommentCodeSnippetTuple> commentPromise = ReadAction.nonBlocking(() -> {
@@ -67,22 +71,18 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
             }).expireWith(CodeLlamaCopilotPluginDisposable.getInstance()).submit(AppExecutorUtil.getAppExecutorService());
 
             try {
-                if(commentPromise.get() != null){
-                    try {
-                        ProgressManager.checkCanceled();
-                        CommentCodeSnippetTuple commentCodeSnippetTuple = commentPromise.get();
-                        String message = String.format("""
-                                Please implement the \
-                                following comment in java. Please pay attention to the given background information.\
-                                 Only provide your new code without prefix, suffix and the given comment and dont use markdown. \
-                                Comment: %s\s
-                                 Prefix: %s\s
-                                 Suffix: %s""", commentCodeSnippetTuple.getComment(), commentCodeSnippetTuple.getCodeSnippet().prefix(), commentCodeSnippetTuple.getCodeSnippet().suffix());
-                        response = chatClient.sendMessage( message);
-                        ProgressManager.checkCanceled();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+                CommentCodeSnippetTuple commentCodeSnippetTuple = commentPromise.get();
+                if(commentCodeSnippetTuple != null && !commentCodeSnippetTuple.getComment().isEmpty()){
+                    ProgressManager.checkCanceled();
+                    String message = String.format("""
+                            Please implement the \
+                            following comment in java. Please pay attention to the given background information.\
+                             Only provide your new code without prefix, suffix and the given comment and dont use markdown. \
+                            Comment: %s\s
+                             Prefix: %s\s
+                             Suffix: %s""", commentCodeSnippetTuple.getComment(), commentCodeSnippetTuple.getCodeSnippet().prefix(), commentCodeSnippetTuple.getCodeSnippet().suffix());
+                    response = chatClient.sendMessage( message);
+                    ProgressManager.checkCanceled();
                     return FlowKt.flowOf(new InlineCompletionElement(response));
                 }
             } catch (InterruptedException | ExecutionException e) {
@@ -115,15 +115,4 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
 
         return null;
     }
-
-    @Override
-    public boolean isEnabled(@NotNull InlineCompletionEvent inlineCompletionEvent) {
-        return CopilotSettingsState.getInstance().useCompletion;
-    }
-
-    private boolean aboveIsComment(){
-        return false;
-    }
-
-
 }

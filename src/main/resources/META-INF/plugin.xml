@@ -22,7 +22,7 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <inline.completion.provider implementation="org.example.codellamacopilot.completionutil.CodeLlamaCompletionProvider"/>
+        <inline.completion.provider implementation="org.example.codellamacopilot.completionutil.CodeLlamaDebouncedCompletionProvider"/>
         <applicationService
                 serviceImplementation="org.example.codellamacopilot.settings.CopilotSettingsState"/>
         <applicationService
