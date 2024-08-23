@@ -5,6 +5,7 @@ import com.intellij.credentialStore.CredentialAttributesKt;
 import com.intellij.credentialStore.Credentials;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 
+@Deprecated
 public class PersistentSensitiveManagement {
 
     private static PersistentSensitiveManagement instance;

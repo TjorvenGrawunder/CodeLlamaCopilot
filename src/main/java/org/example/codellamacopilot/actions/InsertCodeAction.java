@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
+@Deprecated
 public class InsertCodeAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {

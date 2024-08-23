@@ -8,6 +8,7 @@ import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTRe
 
 import java.util.List;
 
+@Deprecated
 public class ChatGPTParser implements ResponseParser{
     @Override
     public String parseResponse(String response) {

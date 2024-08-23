@@ -1,6 +1,5 @@
 package org.example.codellamacopilot.chatwindow.requestformats;
 
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import java.io.IOException;
 import java.net.http.HttpRequest;
@@ -32,5 +31,9 @@ public interface ChatRequestFormat {
      * @param project the current project
      */
     void addCodeContext(Project project);
+
+    String getModel();
+
+    void setModel(String model);
 
 }

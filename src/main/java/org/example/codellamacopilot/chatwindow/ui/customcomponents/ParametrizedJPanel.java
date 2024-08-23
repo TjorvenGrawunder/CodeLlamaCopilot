@@ -5,6 +5,7 @@ import org.example.codellamacopilot.settings.modelsettings.ModelSpecificSettings
 import javax.swing.*;
 import java.awt.*;
 
+@Deprecated
 public class ParametrizedJPanel<T extends ModelSpecificSettingsIdentifier> extends JPanel {
     public ParametrizedJPanel(LayoutManager layout) {
         super(layout);

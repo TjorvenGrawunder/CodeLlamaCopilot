@@ -12,7 +12,6 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.ui.UIUtil;
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
-import org.example.codellamacopilot.chatwindow.parser.ChatGPTParser;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
 import org.example.codellamacopilot.chatwindow.ui.chatcomponents.ChatWindow;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -31,7 +30,7 @@ public class ChatToolWindowFactory implements ToolWindowFactory {
         toolWindow.getComponent().add(chatWindow.getContent());
     }
 
-    private static class ChatToolWindowContent{
+    /*private static class ChatToolWindowContent{
 
         private ChatClient chatClient;
 
@@ -105,5 +104,5 @@ public class ChatToolWindowFactory implements ToolWindowFactory {
                 CHAT_MESSAGE_AREA.append("CodeLlama Copilot: \n" + response + "\n");
             }
         }
-    }
+    }*/
 }

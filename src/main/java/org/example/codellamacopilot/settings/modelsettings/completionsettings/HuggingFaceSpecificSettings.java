@@ -1,6 +1,7 @@
 package org.example.codellamacopilot.settings.modelsettings.completionsettings;
 
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.util.ui.FormBuilder;
 import org.example.codellamacopilot.llamaconnection.HuggingFaceRequestFormat;
 import org.example.codellamacopilot.llamaconnection.CompletionRequestFormat;
 
@@ -9,15 +10,18 @@ import javax.swing.*;
 public class HuggingFaceSpecificSettings extends CompletionModelSpecificSettings {
     private final JTextField huggingFaceApiTokenTextField = new JTextField();
     private final ComboBox<String> completionModelComboBox = new ComboBox<>();
+    private final JPanel PANEL;
 
     public HuggingFaceSpecificSettings() {
         super();
         addModels();
         completionModelComboBox.setSelectedIndex(0);
-        this.add(new JLabel("Select model: "));
-        this.add(completionModelComboBox);
-        this.add(new JLabel("Enter hugging face api token: "));
-        this.add(huggingFaceApiTokenTextField);
+        PANEL = FormBuilder.createFormBuilder()
+                .addLabeledComponent(new JLabel("Enter hugging face api token: "), huggingFaceApiTokenTextField, 1, false)
+                .addLabeledComponent(new JLabel("Select model: "), completionModelComboBox, 1, false)
+                .addComponentFillVertically(new JPanel(), 0)
+                .getPanel();
+        this.add(PANEL);
     }
 
     @Override

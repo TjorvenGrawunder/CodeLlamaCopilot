@@ -13,43 +13,41 @@ import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTRe
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 
-public class ChatGPTRequestFormat extends AbstractChatRequestFormat {
-
+public class PerplexityAIRequestFormat extends AbstractChatRequestFormat {
     private final String API_URL = "https://api.openai.com/v1/chat/completions";
-    private String MODEL;
+    private final String MODEL;
 
-    public ChatGPTRequestFormat() {
+    public PerplexityAIRequestFormat() {
         super("https://api.openai.com/v1/chat/completions", "gpt-4o-mini");
         this.MODEL = "gpt-4o-mini";
     }
 
-    public ChatGPTRequestFormat(String model) {
-        super("https://api.openai.com/v1/chat/completions", model);
+    public PerplexityAIRequestFormat(String model) {
+        super("https://api.perplexity.ai/chat/completions", model);
         this.MODEL = model;
     }
 
-    public ChatGPTRequestFormat(String model, boolean persistentChatHistory) {
-        super("https://api.openai.com/v1/chat/completions", model, persistentChatHistory);
+    public PerplexityAIRequestFormat(String model, boolean persistentChatHistory) {
+        super("https://api.perplexity.ai/chat/completions", model, persistentChatHistory);
         this.MODEL = model;
     }
-
 
     @Override
     public ChatRequestFormat getNewInstance(boolean persistentChatHistory) {
-        return new ChatGPTRequestFormat(this.MODEL, persistentChatHistory);
+        return new PerplexityAIRequestFormat(this.MODEL, persistentChatHistory);
     }
 
     @Override
-    public String getModel(){
+    public String getModel() {
         return this.MODEL;
     }
 
     @Override
     public String toString() {
-        return "ChatGPT";
+        return "PerplexityAI";
     }
-
 }

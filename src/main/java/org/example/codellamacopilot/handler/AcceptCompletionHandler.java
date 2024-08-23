@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.actionSystem.TypedAction;
 import com.intellij.openapi.editor.actionSystem.TypedActionHandler;
 import org.jetbrains.annotations.NotNull;
 
+@Deprecated
 public class AcceptCompletionHandler implements TypedActionHandler {
 
     private final String TO_INSERT;

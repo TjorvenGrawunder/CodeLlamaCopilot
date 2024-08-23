@@ -1,7 +1,7 @@
 package org.example.codellamacopilot.settings.modelsettings.chatsettings;
 
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.ui.components.JBPanel;
+import com.intellij.util.ui.FormBuilder;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
 
@@ -10,19 +10,24 @@ import javax.swing.*;
 public class ChatGPTSpecificSettings extends ChatModelSpecificSettings {
     private final JTextField chatGPTApiTokenTextField = new JTextField();
     private final ComboBox<String> chatModelComboBox = new ComboBox<>();
+    private final JPanel PANEL;
 
     public ChatGPTSpecificSettings() {
-        super();
         addModels();
-        this.add(new JLabel("Enter chat gpt api token: "));
-        this.add(chatGPTApiTokenTextField);
-        this.add(new JLabel("Select chat model: "));
-        this.add(chatModelComboBox);
+        chatModelComboBox.setSelectedIndex(0);
+        PANEL = FormBuilder.createFormBuilder()
+                .addLabeledComponent(new JLabel("Enter chat gpt api token: "), chatGPTApiTokenTextField, 1, false)
+                .addLabeledComponent(new JLabel("Select chat model: "), chatModelComboBox, 1, false)
+                .addComponentFillVertically(new JPanel(), 0)
+                .getPanel();
+        this.add(PANEL);
     }
 
     @Override
     public ChatRequestFormat getChatRequestFormat() {
-        return new ChatGPTRequestFormat();
+        ChatRequestFormat chatRequestFormat = new ChatGPTRequestFormat();
+        chatRequestFormat.setModel((String) chatModelComboBox.getSelectedItem());
+        return chatRequestFormat;
     }
 
     @Override
