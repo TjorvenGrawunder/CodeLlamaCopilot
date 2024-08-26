@@ -29,8 +29,8 @@ public class InlineCompletionMethods {
     }
 
     public Flow<InlineCompletionElement> getProposals() {
-        CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().usedModel);
-        ChatClient chatClient = new ChatClient(INLINE_COMPLETION_REQUEST.getEditor().getProject(), CopilotSettingsState.getInstance().usedChatModel, false);
+        CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().getUsedCompletionRequestFormat());
+        ChatClient chatClient = new ChatClient(INLINE_COMPLETION_REQUEST.getEditor().getProject(), CopilotSettingsState.getInstance().getUsedChatRequestFormat(), false);
         Project currentProject = INLINE_COMPLETION_REQUEST.getEditor().getProject();
         String response = "";
         if (currentProject != null) {

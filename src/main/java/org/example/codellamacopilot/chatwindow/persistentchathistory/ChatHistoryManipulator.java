@@ -74,4 +74,8 @@ public class ChatHistoryManipulator {
         fullHistory.addAll(state.messages);
         return fullHistory;
     }
+
+    public void clearChatHistory() {
+        state.messages.clear();
+    }
 }

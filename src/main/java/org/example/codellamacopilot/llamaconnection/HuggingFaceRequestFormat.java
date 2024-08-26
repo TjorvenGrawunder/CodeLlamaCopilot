@@ -90,6 +90,11 @@ public class HuggingFaceRequestFormat implements CompletionRequestFormat, Serial
     }
 
     @Override
+    public String getName() {
+        return "HuggingFaceRequestFormat";
+    }
+
+    @Override
     public String toString() {
         return "HuggingFace";
     }

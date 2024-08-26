@@ -55,7 +55,7 @@ public class ChatWindow {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        this.chatClient = new ChatClient(this.project, CopilotSettingsState.getInstance().usedChatModel, true);
+        this.chatClient = new ChatClient(this.project, CopilotSettingsState.getInstance().getUsedChatRequestFormat(), true);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
@@ -117,18 +117,20 @@ public class ChatWindow {
             response = chatClient.explain();
         } else if(message.equals("\\test")) {
             response = chatClient.test();
-            //skipResponse = true;
+            skipResponse = true;
+        } else if(message.equals("\\clear")){
+            messagePanel.removeAll();
+            ChatHistoryManipulator chatHistory = new ChatHistoryManipulator();
+            chatHistory.clearChatHistory();
+            response = "Chat cleared!";
+            skipResponse = true;
         } else {
             response = chatClient.sendMessage(message);
         }
 
         if(!skipResponse){
             String[] messageParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
-            /*for(String codePart: codeParts){
-                if (codePart.startsWith("```java")) {
-                    codePart += "```";
-                }
-            }*/
+
 
             messagePanel.add(new ChatResponseField(messageParts, project, this));
             messagePanel.revalidate();

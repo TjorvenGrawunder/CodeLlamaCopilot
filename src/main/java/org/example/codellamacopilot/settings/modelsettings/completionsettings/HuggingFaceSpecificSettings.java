@@ -8,7 +8,7 @@ import org.example.codellamacopilot.llamaconnection.CompletionRequestFormat;
 import javax.swing.*;
 
 public class HuggingFaceSpecificSettings extends CompletionModelSpecificSettings {
-    private final JTextField huggingFaceApiTokenTextField = new JTextField();
+    private final JPasswordField huggingFaceApiTokenTextField = new JPasswordField();
     private final ComboBox<String> completionModelComboBox = new ComboBox<>();
     private final JPanel PANEL;
 
@@ -24,14 +24,40 @@ public class HuggingFaceSpecificSettings extends CompletionModelSpecificSettings
         this.add(PANEL);
     }
 
+    public HuggingFaceSpecificSettings(String completionApiToken, String selectedModel){
+        this();
+        setCompletionApiToken(completionApiToken);
+        setSelectedModel(selectedModel);
+    }
+
     @Override
     public CompletionRequestFormat getCompletionRequestFormat() {
-        return new HuggingFaceRequestFormat(completionModelComboBox.getSelectedItem().toString());
+        return new HuggingFaceRequestFormat( (String) completionModelComboBox.getSelectedItem());
     }
 
     @Override
     public String getCompletionApiToken() {
-        return huggingFaceApiTokenTextField.getText();
+        return String.valueOf(huggingFaceApiTokenTextField.getPassword());
+    }
+
+    @Override
+    public void setCompletionApiToken(String completionApiToken) {
+        huggingFaceApiTokenTextField.setText(completionApiToken);
+    }
+
+    @Override
+    public String getSelectedModel() {
+        return (String) completionModelComboBox.getSelectedItem();
+    }
+
+    @Override
+    public void setSelectedModel(String selectedModel) {
+        completionModelComboBox.setSelectedItem(selectedModel);
+    }
+
+    @Override
+    public String getModelIdentifier() {
+        return "HuggingFace";
     }
 
     private void addModels(){

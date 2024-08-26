@@ -48,6 +48,11 @@ public class ChatGPTRequestFormat extends AbstractChatRequestFormat {
     }
 
     @Override
+    public String getName() {
+        return "ChatGPTRequestFormat";
+    }
+
+    @Override
     public String toString() {
         return "ChatGPT";
     }

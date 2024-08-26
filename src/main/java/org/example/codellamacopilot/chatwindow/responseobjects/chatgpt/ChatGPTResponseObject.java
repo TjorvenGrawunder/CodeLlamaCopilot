@@ -1,7 +1,9 @@
 package org.example.codellamacopilot.chatwindow.responseobjects.chatgpt;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatGPTResponseObject {
     private String id;
     private String object;
@@ -10,6 +12,7 @@ public class ChatGPTResponseObject {
     private ChoiceObject[] choices;
     private UsageObject usage;
     private String systemFingerprint;
+    private ErrorObject error;
 
     @JsonProperty("id")
     public String getId() {
@@ -79,5 +82,15 @@ public class ChatGPTResponseObject {
     @JsonProperty("system_fingerprint")
     public void setSystemFingerprint(String systemFingerprint) {
         this.systemFingerprint = systemFingerprint;
+    }
+
+    @JsonProperty("error")
+    public ErrorObject getError() {
+        return error;
+    }
+
+    @JsonProperty("error")
+    public void setError(ErrorObject error) {
+        this.error = error;
     }
 }

@@ -10,4 +10,5 @@ public interface CompletionRequestFormat {
     String parseResponse(String response) throws IOException;
     HttpRequest getCommentRequest(String comment);
     void setModel(String model);
+    String getName();
 }

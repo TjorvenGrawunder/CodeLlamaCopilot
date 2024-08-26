@@ -26,8 +26,8 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
     @Nullable
     @Override
     public Object getProposals(@NotNull InlineCompletionRequest inlineCompletionRequest, @NotNull Continuation<? super Flow<InlineCompletionElement>> continuation) {
-        CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().usedModel);
-        ChatClient chatClient = new ChatClient(inlineCompletionRequest.getEditor().getProject(), CopilotSettingsState.getInstance().usedChatModel, false);
+        CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().getUsedCompletionRequestFormat());
+        ChatClient chatClient = new ChatClient(inlineCompletionRequest.getEditor().getProject(), CopilotSettingsState.getInstance().getUsedChatRequestFormat(), false);
         Project currentProject = inlineCompletionRequest.getEditor().getProject();
         String response = "";
         if (currentProject != null) {

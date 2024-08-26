@@ -36,4 +36,6 @@ public interface ChatRequestFormat {
 
     void setModel(String model);
 
+    String getName();
+
 }

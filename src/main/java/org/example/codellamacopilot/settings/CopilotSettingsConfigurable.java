@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public final class CopilotSettingsConfigurable implements Configurable {
 
@@ -34,9 +35,12 @@ public final class CopilotSettingsConfigurable implements Configurable {
         CopilotSettingsState settings = CopilotSettingsState.getInstance();
         boolean modified = !copilotSettingsComponent.getCompletionAPITokenText().equals(settings.apiToken);
         modified |= !copilotSettingsComponent.getChatAPITokenText().equals(settings.chatApiToken);
-        modified |= copilotSettingsComponent.getSelectedCompletionModel() != settings.usedModel;
-        modified |= copilotSettingsComponent.getSelectedChatModel() != settings.usedChatModel;
+        modified |= !Objects.equals(copilotSettingsComponent.getSelectedCompletionModel(), settings.usedModel);
+        modified |= !Objects.equals(copilotSettingsComponent.getSelectedChatModel(), settings.usedChatModel);
         modified |= copilotSettingsComponent.getUseCompletion() != settings.useCompletion;
+        modified |= !copilotSettingsComponent.getChatGPTSpecificSettings().equals(settings.chatGPTSpecificSettings);
+        modified |= !copilotSettingsComponent.getPerplexityAISpecificSettings().equals(settings.perplexityAISpecificSettings);
+        modified |= !copilotSettingsComponent.getHuggingFaceSpecificSettings().equals(settings.huggingFaceSpecificSettings);
         return modified;
     }
 
@@ -48,16 +52,22 @@ public final class CopilotSettingsConfigurable implements Configurable {
         settings.usedModel = copilotSettingsComponent.getSelectedCompletionModel();
         settings.usedChatModel = copilotSettingsComponent.getSelectedChatModel();
         settings.useCompletion = copilotSettingsComponent.getUseCompletion();
+        settings.chatGPTSpecificSettings = copilotSettingsComponent.getChatGPTSpecificSettings();
+        settings.perplexityAISpecificSettings = copilotSettingsComponent.getPerplexityAISpecificSettings();
+        settings.huggingFaceSpecificSettings = copilotSettingsComponent.getHuggingFaceSpecificSettings();
     }
 
     @Override
     public void reset() {
         CopilotSettingsState settings = CopilotSettingsState.getInstance();
-        copilotSettingsComponent.setCompletionAPITokenText(settings.apiToken);
-        copilotSettingsComponent.setChatAPITokenText(settings.chatApiToken);
+        //copilotSettingsComponent.setCompletionAPITokenText(settings.apiToken);
+        //copilotSettingsComponent.setChatAPITokenText(settings.chatApiToken);
         copilotSettingsComponent.setSelectedModel(settings.usedModel);
         copilotSettingsComponent.setSelectedChatModel(settings.usedChatModel);
         copilotSettingsComponent.setUseCompletion(settings.useCompletion);
+        copilotSettingsComponent.setChatGPTSpecificSettings(settings.chatGPTSpecificSettings);
+        copilotSettingsComponent.setPerplexityAISpecificSettings(settings.perplexityAISpecificSettings);
+        copilotSettingsComponent.setHuggingFaceSpecificSettings(settings.huggingFaceSpecificSettings);
     }
 
     @Override
