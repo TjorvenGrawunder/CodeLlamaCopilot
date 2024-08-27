@@ -41,6 +41,8 @@ public final class CopilotSettingsConfigurable implements Configurable {
         modified |= !copilotSettingsComponent.getChatGPTSpecificSettings().equals(settings.chatGPTSpecificSettings);
         modified |= !copilotSettingsComponent.getPerplexityAISpecificSettings().equals(settings.perplexityAISpecificSettings);
         modified |= !copilotSettingsComponent.getHuggingFaceSpecificSettings().equals(settings.huggingFaceSpecificSettings);
+        modified |= !copilotSettingsComponent.getCustomCompletionModelSpecificSettings().equals(settings.customCompletionModelSpecificSettings);
+        modified |= !copilotSettingsComponent.getCustomChatModelSpecificSettings().equals(settings.customChatModelSpecificSettings);
         return modified;
     }
 
@@ -55,6 +57,8 @@ public final class CopilotSettingsConfigurable implements Configurable {
         settings.chatGPTSpecificSettings = copilotSettingsComponent.getChatGPTSpecificSettings();
         settings.perplexityAISpecificSettings = copilotSettingsComponent.getPerplexityAISpecificSettings();
         settings.huggingFaceSpecificSettings = copilotSettingsComponent.getHuggingFaceSpecificSettings();
+        settings.customCompletionModelSpecificSettings = copilotSettingsComponent.getCustomCompletionModelSpecificSettings();
+        settings.customChatModelSpecificSettings = copilotSettingsComponent.getCustomChatModelSpecificSettings();
     }
 
     @Override
@@ -68,6 +72,8 @@ public final class CopilotSettingsConfigurable implements Configurable {
         copilotSettingsComponent.setChatGPTSpecificSettings(settings.chatGPTSpecificSettings);
         copilotSettingsComponent.setPerplexityAISpecificSettings(settings.perplexityAISpecificSettings);
         copilotSettingsComponent.setHuggingFaceSpecificSettings(settings.huggingFaceSpecificSettings);
+        copilotSettingsComponent.setCustomCompletionModelSpecificSettings(settings.customCompletionModelSpecificSettings);
+        copilotSettingsComponent.setCustomChatModelSpecificSettings(settings.customChatModelSpecificSettings);
     }
 
     @Override

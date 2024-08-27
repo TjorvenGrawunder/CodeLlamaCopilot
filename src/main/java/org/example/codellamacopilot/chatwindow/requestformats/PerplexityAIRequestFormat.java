@@ -18,13 +18,7 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 
 public class PerplexityAIRequestFormat extends AbstractChatRequestFormat {
-    private final String API_URL = "https://api.openai.com/v1/chat/completions";
     private final String MODEL;
-
-    public PerplexityAIRequestFormat() {
-        super("https://api.openai.com/v1/chat/completions", "llama-3.1-sonar-small-128k-chat");
-        this.MODEL = "llama-3.1-sonar-small-128k-chat";
-    }
 
     public PerplexityAIRequestFormat(String model) {
         super("https://api.perplexity.ai/chat/completions", model);

@@ -13,6 +13,7 @@ public class ChatGPTRequestObject {
         this.model = model;
         this.messages = messages;
     }
+
     @JsonProperty("messages")
     public List<MessageObject> getMessages() {
         return messages;

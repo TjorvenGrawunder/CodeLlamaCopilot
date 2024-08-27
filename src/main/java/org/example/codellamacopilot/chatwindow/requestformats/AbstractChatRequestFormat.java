@@ -105,4 +105,8 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
     public void setModel(String model){
         this.model = model;
     }
+
+    protected String getAPI_URL(){
+        return this.API_URL;
+    }
 }

@@ -26,6 +26,11 @@ public class ChatClient {
         this.REQUEST_FORMAT = requestFormat.getNewInstance(persistentChatHistory);
     }
 
+    /**
+     * Sends a message to the chat model
+     * @param message the message to send
+     * @return the response from the chat model
+     */
     public String sendMessage(String message) {
         REQUEST_FORMAT.addCodeContext(PROJECT);
         HttpRequest request = REQUEST_FORMAT.getRequest(message);

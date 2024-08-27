@@ -18,13 +18,7 @@ import java.net.http.HttpRequest;
 
 public class ChatGPTRequestFormat extends AbstractChatRequestFormat {
 
-    private final String API_URL = "https://api.openai.com/v1/chat/completions";
-    private String MODEL;
-
-    public ChatGPTRequestFormat() {
-        super("https://api.openai.com/v1/chat/completions", "gpt-4o-mini");
-        this.MODEL = "gpt-4o-mini";
-    }
+    private final String MODEL;
 
     public ChatGPTRequestFormat(String model) {
         super("https://api.openai.com/v1/chat/completions", model);

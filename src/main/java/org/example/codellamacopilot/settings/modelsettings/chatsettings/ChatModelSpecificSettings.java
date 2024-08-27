@@ -1,5 +1,6 @@
 package org.example.codellamacopilot.settings.modelsettings.chatsettings;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
 import org.example.codellamacopilot.settings.modelsettings.ModelSpecificSettingsIdentifier;
 import org.jetbrains.annotations.NotNull;

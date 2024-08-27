@@ -12,6 +12,8 @@ public class ChatGPTSpecificSettings extends ChatModelSpecificSettings {
     private final ComboBox<String> chatModelComboBox = new ComboBox<>();
     private final JPanel PANEL;
 
+    private String chatApiToken;
+
     public ChatGPTSpecificSettings() {
         addModels();
         chatModelComboBox.setSelectedIndex(0);
@@ -31,9 +33,7 @@ public class ChatGPTSpecificSettings extends ChatModelSpecificSettings {
 
     @Override
     public ChatRequestFormat getChatRequestFormat() {
-        ChatRequestFormat chatRequestFormat = new ChatGPTRequestFormat();
-        chatRequestFormat.setModel((String) chatModelComboBox.getSelectedItem());
-        return chatRequestFormat;
+        return new ChatGPTRequestFormat((String) chatModelComboBox.getSelectedItem());
     }
 
     @Override

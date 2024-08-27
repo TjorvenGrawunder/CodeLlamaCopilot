@@ -31,9 +31,7 @@ public class PerplexityAISpecificSettings extends ChatModelSpecificSettings {
 
     @Override
     public ChatRequestFormat getChatRequestFormat() {
-        ChatRequestFormat chatRequestFormat = new PerplexityAIRequestFormat();
-        chatRequestFormat.setModel( (String) chatModelComboBox.getSelectedItem());
-        return chatRequestFormat;
+        return new PerplexityAIRequestFormat((String) chatModelComboBox.getSelectedItem());
     }
 
     @Override

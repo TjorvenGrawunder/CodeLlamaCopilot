@@ -12,8 +12,10 @@ import org.example.codellamacopilot.llamaconnection.HuggingFaceRequestFormat;
 import org.example.codellamacopilot.llamaconnection.CompletionRequestFormat;
 import org.example.codellamacopilot.settings.modelsettings.chatsettings.ChatGPTSpecificSettings;
 import org.example.codellamacopilot.settings.modelsettings.chatsettings.ChatModelSpecificSettings;
+import org.example.codellamacopilot.settings.modelsettings.chatsettings.CustomChatModelSpecificSettings;
 import org.example.codellamacopilot.settings.modelsettings.chatsettings.PerplexityAISpecificSettings;
 import org.example.codellamacopilot.settings.modelsettings.completionsettings.CompletionModelSpecificSettings;
+import org.example.codellamacopilot.settings.modelsettings.completionsettings.CustomCompletionModelSpecificSettings;
 import org.example.codellamacopilot.settings.modelsettings.completionsettings.HuggingFaceSpecificSettings;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,10 +37,10 @@ public class CopilotSettingsComponent {
     private final JBCheckBox USE_COMPLETION_CHECKBOX = new JBCheckBox("Use completion");
 
     //Specific Completion Settings
-    CompletionModelSpecificSettings[] completionModelSpecificSettings = {settingsInstance.huggingFaceSpecificSettings};
+    CompletionModelSpecificSettings[] completionModelSpecificSettings = {settingsInstance.huggingFaceSpecificSettings, settingsInstance.customCompletionModelSpecificSettings};
 
     //Specific Chat Settings
-    ChatModelSpecificSettings[] chatModelSpecificSettings = {settingsInstance.chatGPTSpecificSettings, settingsInstance.perplexityAISpecificSettings};
+    ChatModelSpecificSettings[] chatModelSpecificSettings = {settingsInstance.chatGPTSpecificSettings, settingsInstance.perplexityAISpecificSettings, settingsInstance.customChatModelSpecificSettings};
 
     private int selectedChatIndex = 0;
     private int selectedCompletionIndex = 0;
@@ -138,6 +140,16 @@ public class CopilotSettingsComponent {
         return USE_COMPLETION_CHECKBOX.isSelected();
     }
 
+    public ChatGPTSpecificSettings getChatGPTSpecificSettings() {
+        chatModelSpecificSettings[CHAT_MODEL_COMBO_BOX.getSelectedIndex()] =
+                (ChatModelSpecificSettings) CHAT_SETTINGS_PANEL.getComponent(CHAT_MODEL_COMBO_BOX.getSelectedIndex());
+        return (ChatGPTSpecificSettings) chatModelSpecificSettings[0];
+    }
+
+    public void setChatGPTSpecificSettings(ChatGPTSpecificSettings chatGPTSpecificSettings) {
+        this.chatModelSpecificSettings[0] = chatGPTSpecificSettings;
+    }
+
     public PerplexityAISpecificSettings getPerplexityAISpecificSettings() {
         chatModelSpecificSettings[CHAT_MODEL_COMBO_BOX.getSelectedIndex()] =
                 (ChatModelSpecificSettings) CHAT_SETTINGS_PANEL.getComponent(CHAT_MODEL_COMBO_BOX.getSelectedIndex());
@@ -148,14 +160,14 @@ public class CopilotSettingsComponent {
         this.chatModelSpecificSettings[1] = perplexityAISpecificSettings;
     }
 
-    public ChatGPTSpecificSettings getChatGPTSpecificSettings() {
+    public CustomChatModelSpecificSettings getCustomChatModelSpecificSettings() {
         chatModelSpecificSettings[CHAT_MODEL_COMBO_BOX.getSelectedIndex()] =
                 (ChatModelSpecificSettings) CHAT_SETTINGS_PANEL.getComponent(CHAT_MODEL_COMBO_BOX.getSelectedIndex());
-        return (ChatGPTSpecificSettings) chatModelSpecificSettings[0];
+        return (CustomChatModelSpecificSettings) chatModelSpecificSettings[2];
     }
 
-    public void setChatGPTSpecificSettings(ChatGPTSpecificSettings chatGPTSpecificSettings) {
-        this.chatModelSpecificSettings[0] = chatGPTSpecificSettings;
+    public void setCustomChatModelSpecificSettings(CustomChatModelSpecificSettings customChatModelSpecificSettings) {
+        this.chatModelSpecificSettings[2] = customChatModelSpecificSettings;
     }
 
     public HuggingFaceSpecificSettings getHuggingFaceSpecificSettings() {
@@ -167,5 +179,16 @@ public class CopilotSettingsComponent {
 
     public void setHuggingFaceSpecificSettings(HuggingFaceSpecificSettings huggingFaceSpecificSettings) {
         this.completionModelSpecificSettings[0] = huggingFaceSpecificSettings;
+    }
+
+    public CustomCompletionModelSpecificSettings getCustomCompletionModelSpecificSettings() {
+        completionModelSpecificSettings[COMPLETION_MODEL_COMBO_BOX.getSelectedIndex()] =
+                (CompletionModelSpecificSettings) COMPLETION_SETTINGS_PANEL
+                        .getComponent(COMPLETION_MODEL_COMBO_BOX.getSelectedIndex());
+        return (CustomCompletionModelSpecificSettings) completionModelSpecificSettings[1];
+    }
+
+    public void setCustomCompletionModelSpecificSettings(CustomCompletionModelSpecificSettings customCompletionModelSpecificSettings) {
+        this.completionModelSpecificSettings[1] = customCompletionModelSpecificSettings;
     }
 }

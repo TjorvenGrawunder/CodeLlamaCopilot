@@ -1,4 +1,4 @@
-package org.example.codellamacopilot.persistentconverter;
+package org.example.codellamacopilot.persistentconverter.settingsconverter.chat;
 
 import com.intellij.util.xmlb.Converter;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
@@ -11,7 +11,7 @@ public class ChatRequestFormatConverter extends Converter<ChatRequestFormat> {
 
     @Override
     public @Nullable ChatRequestFormat fromString(@NotNull String value) {
-        String[] split = value.split(":");
+        String[] split = value.split("@");
         if (split[0].equals("ChatGPT")) {
             return new ChatGPTRequestFormat(split[1]);
         }else if (split[0].equals("PerplexityAI")) {
@@ -23,6 +23,6 @@ public class ChatRequestFormatConverter extends Converter<ChatRequestFormat> {
 
     @Override
     public @Nullable String toString(@NotNull ChatRequestFormat value) {
-        return value + ":" + value.getModel();
+        return value + "@" + value.getModel();
     }
 }

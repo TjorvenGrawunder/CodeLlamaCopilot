@@ -7,13 +7,16 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
-import org.example.codellamacopilot.chatwindow.requestformats.PerplexityAIRequestFormat;
 import org.example.codellamacopilot.llamaconnection.CompletionRequestFormat;
-import org.example.codellamacopilot.persistentconverter.*;
+import org.example.codellamacopilot.persistentconverter.settingsconverter.chat.ChatGPTSpecificSettingsConverter;
+import org.example.codellamacopilot.persistentconverter.settingsconverter.chat.CustomChatModelSpecificSettingsConverter;
+import org.example.codellamacopilot.persistentconverter.settingsconverter.chat.PerplexityAISpecificSettingsConverter;
+import org.example.codellamacopilot.persistentconverter.settingsconverter.completion.CustomCompletionModelSpecificSettingsConverter;
+import org.example.codellamacopilot.persistentconverter.settingsconverter.completion.HuggingFaceSpecificSettingsConverter;
 import org.example.codellamacopilot.settings.modelsettings.chatsettings.ChatGPTSpecificSettings;
-import org.example.codellamacopilot.settings.modelsettings.chatsettings.ChatModelSpecificSettings;
+import org.example.codellamacopilot.settings.modelsettings.chatsettings.CustomChatModelSpecificSettings;
 import org.example.codellamacopilot.settings.modelsettings.chatsettings.PerplexityAISpecificSettings;
-import org.example.codellamacopilot.settings.modelsettings.completionsettings.CompletionModelSpecificSettings;
+import org.example.codellamacopilot.settings.modelsettings.completionsettings.CustomCompletionModelSpecificSettings;
 import org.example.codellamacopilot.settings.modelsettings.completionsettings.HuggingFaceSpecificSettings;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,9 +36,13 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
     public ChatGPTSpecificSettings chatGPTSpecificSettings;
     @OptionTag(converter = PerplexityAISpecificSettingsConverter.class)
     public PerplexityAISpecificSettings perplexityAISpecificSettings;
+    @OptionTag(converter = CustomChatModelSpecificSettingsConverter.class)
+    public CustomChatModelSpecificSettings customChatModelSpecificSettings;
     //Specific Completion Settings
     @OptionTag(converter = HuggingFaceSpecificSettingsConverter.class)
     public HuggingFaceSpecificSettings huggingFaceSpecificSettings;
+    @OptionTag(converter = CustomCompletionModelSpecificSettingsConverter.class)
+    public CustomCompletionModelSpecificSettings customCompletionModelSpecificSettings;
 
     //Current API Tokens
     public String apiToken;
@@ -48,7 +55,9 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
         usedChatModel = "chatGPTRequestFormat";
         chatGPTSpecificSettings = new ChatGPTSpecificSettings();
         perplexityAISpecificSettings = new PerplexityAISpecificSettings();
+        customChatModelSpecificSettings = new CustomChatModelSpecificSettings();
         huggingFaceSpecificSettings = new HuggingFaceSpecificSettings();
+        customCompletionModelSpecificSettings = new CustomCompletionModelSpecificSettings();
         apiToken = "";
         chatApiToken = "";
         useCompletion = false;
@@ -70,6 +79,7 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
     public CompletionRequestFormat getUsedCompletionRequestFormat() {
         return switch (usedModel) {
             case "HuggingFace" -> huggingFaceSpecificSettings.getCompletionRequestFormat();
+            case "Custom" -> customCompletionModelSpecificSettings.getCompletionRequestFormat();
             default -> null;
         };
     }
@@ -78,6 +88,7 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
         return switch (usedChatModel) {
             case "ChatGPT" -> chatGPTSpecificSettings.getChatRequestFormat();
             case "PerplexityAI" -> perplexityAISpecificSettings.getChatRequestFormat();
+            case "Custom" -> customChatModelSpecificSettings.getChatRequestFormat();
             default -> null;
         };
     }
