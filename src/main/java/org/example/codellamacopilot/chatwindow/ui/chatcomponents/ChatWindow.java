@@ -14,10 +14,14 @@ import org.example.codellamacopilot.chatwindow.api.ChatClient;
 
 import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
+import org.example.codellamacopilot.dialogs.StackTraceDialogWrapper;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import javax.swing.*;
 
 import java.awt.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
 
 public class ChatWindow {
     private JPanel mainPanel;
@@ -26,6 +30,7 @@ public class ChatWindow {
     private ExpandableTextField inputField;
     private ChatClient chatClient;
     private Project project;
+    private String stackTrace;
 
     public ChatWindow(Project project) {
         this.project = project;
@@ -116,7 +121,12 @@ public class ChatWindow {
             }
         } catch (Exception e) {
             chatClient.getRequestFormat().removeLastMessage();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            stackTrace = sw.toString();
             sendChatAlert("An error occurred while sending the message. Please try again.");
+            stackTrace = "";
         }
     }
 
@@ -149,8 +159,20 @@ public class ChatWindow {
 
     public void sendChatAlert(String message) {
         // Send chat alert
+        JPanel errorPanel = new JPanel(new BorderLayout());
+        JButton showStacktraceButton = new JButton("Show Stacktrace");
+        showStacktraceButton.addActionListener(e -> {
+            StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTrace);
+            stackTraceDialogWrapper.show();
+        });
+        System.out.println(stackTrace);
+        if(stackTrace.isEmpty()){
+            showStacktraceButton.setVisible(false);
+        }
         message = "<font color=\"red\">" + message + "</font>";
-        messagePanel.add(new ChatResponseField(message, project, this));
+        errorPanel.add(new ChatResponseField(message, project, this), BorderLayout.CENTER);
+        errorPanel.add(showStacktraceButton, BorderLayout.SOUTH);
+        messagePanel.add(errorPanel);
         messagePanel.revalidate();
     }
 }
