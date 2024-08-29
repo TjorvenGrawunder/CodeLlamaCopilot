@@ -86,7 +86,7 @@ public class ChatCodeField extends JPanel {
                 }
             }catch (NullPointerException e){
                 //Send an alert if no editor is selected
-                chatWindow.sendChatAlert("Please select a editor to create the class in the same folder.");
+                chatWindow.sendChatAlert("Please select a editor to create the class in the same folder.", "");
             }
         }
     }

@@ -12,6 +12,7 @@ import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistory
 import org.example.codellamacopilot.chatwindow.requestobjects.chatgpt.ChatGPTRequestObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTResponseObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
+import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 
 import java.net.URI;
@@ -67,14 +68,13 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
 
     }
 
-    public String parseResponse(String response) throws JsonProcessingException {
+    public String parseResponse(String response) throws JsonProcessingException, ErrorMessageException {
         ObjectMapper mapper = new ObjectMapper();
         ChatGPTResponseObject responseObject;
         responseObject = mapper.readValue(response, ChatGPTResponseObject.class);
 
         if (responseObject.getChoices() == null) {
-            chatHistory.removeLastMessage();
-            return responseObject.getError().getMessage();
+            throw new ErrorMessageException(responseObject.getError().getMessage());
         } else {
             response = responseObject.getChoices()[0].getMessage().getContent();
         }

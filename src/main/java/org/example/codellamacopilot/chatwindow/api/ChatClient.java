@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.io.FileUtils;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
+import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 
 import java.io.File;
@@ -33,7 +34,7 @@ public class ChatClient {
      * @param message the message to send
      * @return the response from the chat model
      */
-    public String sendMessage(String message) throws IOException, InterruptedException {
+    public String sendMessage(String message) throws IOException, InterruptedException, ErrorMessageException {
         //Get current chat request format from the settings
         requestFormat = CopilotSettingsState.getInstance().getUsedChatRequestFormat();
         requestFormat.addCodeContext(PROJECT);
@@ -45,17 +46,17 @@ public class ChatClient {
 
     }
 
-    public String explain() throws IOException, InterruptedException {
+    public String explain() throws IOException, InterruptedException, ErrorMessageException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         return sendMessage("Please explain the following code: \n" +currentDocument.getText());
     }
 
-    public String debug() throws IOException, InterruptedException {
+    public String debug() throws IOException, InterruptedException, ErrorMessageException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         return sendMessage("Please debug the following code: \n" +currentDocument.getText());
     }
 
-    public String test() throws IOException, InterruptedException {
+    public String test() throws IOException, InterruptedException, ErrorMessageException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         VirtualFile documentFile = FileDocumentManager.getInstance().getFile(currentDocument);
         String response;

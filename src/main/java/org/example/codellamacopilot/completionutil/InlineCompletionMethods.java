@@ -12,6 +12,7 @@ import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 import kotlinx.coroutines.flow.FlowKt;
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
+import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.llamaconnection.CompletionClient;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.example.codellamacopilot.util.CodeSnippet;
@@ -84,7 +85,7 @@ public class InlineCompletionMethods {
                     ProgressManager.checkCanceled();
                     return FlowKt.flowOf(new InlineCompletionElement(response));
                 }
-            } catch (InterruptedException | ExecutionException | IOException e) {
+            } catch (InterruptedException | ExecutionException | IOException | ErrorMessageException e) {
                 throw new RuntimeException(e);
             }
 

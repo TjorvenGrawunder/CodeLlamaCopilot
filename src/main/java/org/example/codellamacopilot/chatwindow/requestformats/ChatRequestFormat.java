@@ -2,6 +2,8 @@ package org.example.codellamacopilot.chatwindow.requestformats;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.intellij.openapi.project.Project;
+import org.example.codellamacopilot.exceptions.ErrorMessageException;
+
 import java.io.IOException;
 import java.net.http.HttpRequest;
 
@@ -19,7 +21,7 @@ public interface ChatRequestFormat {
      * @return the response message as markdown string
      * @throws IOException
      */
-    String parseResponse(String response) throws IOException;
+    String parseResponse(String response) throws IOException, ErrorMessageException;
 
     /**
      * Get a new instance of the ChatRequestFormat

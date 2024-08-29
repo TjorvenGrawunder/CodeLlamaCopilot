@@ -2,7 +2,12 @@ package org.example.codellamacopilot.dialogs;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextArea;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Document;
 import org.jetbrains.annotations.Nullable;
+import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,25 +18,23 @@ public class StackTraceDialogWrapper extends DialogWrapper {
     public StackTraceDialogWrapper(String stackTrace) {
         super(true);
         this.stackTrace = stackTrace;
+        this.setSize(800, 600);
+        this.setTitle("Stack Trace");
         init();
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
         JPanel stackTracePanel = new JPanel(new BorderLayout());
-        JBScrollPane stackTraceScrollPane = new JBScrollPane();
+        JBTextArea stackTraceTextArea = new JBTextArea();
+        stackTraceTextArea.setText(stackTrace);
+        stackTraceTextArea.setEditable(false);
+        stackTraceTextArea.setLineWrap(false);
+        stackTraceTextArea.setWrapStyleWord(true);
+        stackTraceTextArea.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        stackTraceScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        stackTraceScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-        JTextPane stackTraceTextPane = new JTextPane();
-        stackTraceTextPane.setContentType("text/html");
-        stackTrace = "<font color=\"red\">" + stackTrace + "</font>";
-        stackTraceTextPane.setText(stackTrace);
-        stackTraceTextPane.setEditable(false);
-        stackTraceScrollPane.setViewportView(stackTraceTextPane);
-
-        stackTracePanel.add(stackTraceScrollPane, BorderLayout.CENTER);
+        JBScrollPane scrollPane = new JBScrollPane(stackTraceTextArea);
+        stackTracePanel.add(scrollPane, BorderLayout.CENTER);
 
         return stackTracePanel;
     }

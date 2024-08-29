@@ -11,6 +11,7 @@ import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 import kotlinx.coroutines.flow.FlowKt;
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
+import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.llamaconnection.CompletionClient;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.example.codellamacopilot.util.CodeSnippet;
@@ -80,7 +81,7 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
                                  Suffix: %s""", commentCodeSnippetTuple.getComment(), commentCodeSnippetTuple.getCodeSnippet().prefix(), commentCodeSnippetTuple.getCodeSnippet().suffix());
                         response = chatClient.sendMessage( message);
                         ProgressManager.checkCanceled();
-                    } catch (InterruptedException | IOException e) {
+                    } catch (InterruptedException | IOException | ErrorMessageException e) {
                         throw new RuntimeException(e);
                     }
                     return FlowKt.flowOf(new InlineCompletionElement(response));

@@ -21,7 +21,9 @@ public class ChatHistoryManipulator {
     }
 
     public void removeLastMessage() {
-        state.messages.remove(state.messages.size() - 1);
+        if(state.messages.size() % 2 == 1) {
+            state.messages.remove(state.messages.size() - 1);
+        }
     }
 
     public void removeCodeContext() {

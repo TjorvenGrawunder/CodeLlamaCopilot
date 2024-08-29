@@ -1,6 +1,7 @@
 package org.example.codellamacopilot.chatwindow.ui.chatcomponents;
 
 
+import com.google.common.base.Throwables;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
@@ -10,11 +11,13 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.fields.ExpandableTextField;
 import com.intellij.ui.components.fields.ExtendableTextComponent;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
 
 import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 import org.example.codellamacopilot.dialogs.StackTraceDialogWrapper;
+import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import javax.swing.*;
 
@@ -30,7 +33,6 @@ public class ChatWindow {
     private ExpandableTextField inputField;
     private ChatClient chatClient;
     private Project project;
-    private String stackTrace;
 
     public ChatWindow(Project project) {
         this.project = project;
@@ -117,16 +119,15 @@ public class ChatWindow {
 
                 messagePanel.add(new ChatResponseField(messageParts, project, this));
                 messagePanel.revalidate();
-
             }
+        }catch (ErrorMessageException errorMessageException){
+            chatClient.getRequestFormat().removeLastMessage();
+            sendChatAlert(errorMessageException.getMessage(), "");
         } catch (Exception e) {
             chatClient.getRequestFormat().removeLastMessage();
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            stackTrace = sw.toString();
-            sendChatAlert("An error occurred while sending the message. Please try again.");
-            stackTrace = "";
+            String stackTrace = Throwables.getStackTraceAsString(e);
+
+            sendChatAlert("An error occurred while sending the message. Please try again.", stackTrace);
         }
     }
 
@@ -157,15 +158,14 @@ public class ChatWindow {
 
     }
 
-    public void sendChatAlert(String message) {
+    public void sendChatAlert(String message, String stackTrace) {
         // Send chat alert
         JPanel errorPanel = new JPanel(new BorderLayout());
         JButton showStacktraceButton = new JButton("Show Stacktrace");
         showStacktraceButton.addActionListener(e -> {
             StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTrace);
-            stackTraceDialogWrapper.show();
+            stackTraceDialogWrapper.showAndGet();
         });
-        System.out.println(stackTrace);
         if(stackTrace.isEmpty()){
             showStacktraceButton.setVisible(false);
         }
