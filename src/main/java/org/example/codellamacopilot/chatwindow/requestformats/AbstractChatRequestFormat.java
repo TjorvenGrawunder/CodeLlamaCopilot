@@ -71,8 +71,16 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
         ObjectMapper mapper = new ObjectMapper();
         ChatGPTResponseObject responseObject;
         responseObject = mapper.readValue(response, ChatGPTResponseObject.class);
-        response = responseObject.getChoices()[0].getMessage().getContent();
-        if (PERSISTENT_CHAT_HISTORY){
+
+        if (responseObject.getChoices() == null) {
+            chatHistory.removeLastMessage();
+            return responseObject.getError().getMessage();
+        } else {
+            response = responseObject.getChoices()[0].getMessage().getContent();
+        }
+
+
+        if (PERSISTENT_CHAT_HISTORY && response != null) {
             chatHistory.addMessage(new MessageObject("assistant", response));
         }
 
