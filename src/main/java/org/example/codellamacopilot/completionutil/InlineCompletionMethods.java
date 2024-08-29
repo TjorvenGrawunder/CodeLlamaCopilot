@@ -84,7 +84,7 @@ public class InlineCompletionMethods {
                     ProgressManager.checkCanceled();
                     return FlowKt.flowOf(new InlineCompletionElement(response));
                 }
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException | ExecutionException | IOException e) {
                 throw new RuntimeException(e);
             }
 

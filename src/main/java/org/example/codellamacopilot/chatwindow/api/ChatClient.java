@@ -1,6 +1,7 @@
 package org.example.codellamacopilot.chatwindow.api;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -8,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.io.FileUtils;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
+import org.example.codellamacopilot.settings.CopilotSettingsState;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +20,12 @@ import java.net.http.HttpResponse;
 public class ChatClient {
 
     private final Project PROJECT;
-    private final ChatRequestFormat REQUEST_FORMAT;
+    private ChatRequestFormat requestFormat;
     private final HttpClient CLIENT = HttpClient.newHttpClient();
 
     public ChatClient(Project project, ChatRequestFormat requestFormat, boolean persistentChatHistory) {
         this.PROJECT = project;
-        this.REQUEST_FORMAT = requestFormat.getNewInstance(persistentChatHistory);
+        this.requestFormat = requestFormat.getNewInstance(persistentChatHistory);
     }
 
     /**
@@ -31,30 +33,29 @@ public class ChatClient {
      * @param message the message to send
      * @return the response from the chat model
      */
-    public String sendMessage(String message) {
-        REQUEST_FORMAT.addCodeContext(PROJECT);
-        HttpRequest request = REQUEST_FORMAT.getRequest(message);
+    public String sendMessage(String message) throws IOException, InterruptedException {
+        //Get current chat request format from the settings
+        requestFormat = CopilotSettingsState.getInstance().getUsedChatRequestFormat();
+        requestFormat.addCodeContext(PROJECT);
+        HttpRequest request = requestFormat.getRequest(message);
         HttpResponse<String> response;
-        try {
-            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            return REQUEST_FORMAT.parseResponse(response.body());
 
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        return requestFormat.parseResponse(response.body());
+
     }
 
-    public String explain(){
+    public String explain() throws IOException, InterruptedException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         return sendMessage("Please explain the following code: \n" +currentDocument.getText());
     }
 
-    public String debug(){
+    public String debug() throws IOException, InterruptedException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         return sendMessage("Please debug the following code: \n" +currentDocument.getText());
     }
 
-    public String test(){
+    public String test() throws IOException, InterruptedException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         VirtualFile documentFile = FileDocumentManager.getInstance().getFile(currentDocument);
         String response;
@@ -86,6 +87,6 @@ public class ChatClient {
     }
 
     public ChatRequestFormat getRequestFormat(){
-        return REQUEST_FORMAT;
+        return requestFormat;
     }
 }

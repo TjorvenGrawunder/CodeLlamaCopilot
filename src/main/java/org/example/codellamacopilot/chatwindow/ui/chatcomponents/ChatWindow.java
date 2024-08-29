@@ -1,46 +1,23 @@
 package org.example.codellamacopilot.chatwindow.ui.chatcomponents;
 
 
-import com.intellij.lang.Language;
-import com.intellij.markdown.utils.lang.CodeBlockHtmlSyntaxHighlighter;
-import com.intellij.markdown.utils.lang.HtmlSyntaxHighlighter;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.HtmlChunk;
 import com.intellij.ui.AnimatedIcon;
 import com.intellij.ui.components.JBScrollPane;
 
 import com.intellij.ui.components.fields.ExpandableTextField;
 import com.intellij.ui.components.fields.ExtendableTextComponent;
-import com.intellij.util.ui.ExtendableHTMLViewFactory;
-import com.intellij.util.ui.HTMLEditorKitBuilder;
-import com.intellij.util.ui.JBHtmlEditorKit;
-import com.teamdev.jxbrowser.browser.Browser;
-import com.teamdev.jxbrowser.engine.Engine;
-import com.teamdev.jxbrowser.engine.EngineOptions;
-import com.teamdev.jxbrowser.view.swing.BrowserView;
 
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
 
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.ast.Document;
-import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistory;
 import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
-import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import javax.swing.*;
-import javax.swing.text.View;
 
 import java.awt.*;
-
-import static com.teamdev.jxbrowser.engine.RenderingMode.HARDWARE_ACCELERATED;
 
 public class ChatWindow {
     private JPanel mainPanel;
@@ -111,32 +88,36 @@ public class ChatWindow {
 
         boolean skipResponse = false;
         String response;
-        if(message.equals("\\debug")){
-            response = chatClient.debug();
-        } else if(message.equals("\\explain")){
-            response = chatClient.explain();
-        } else if(message.equals("\\test")) {
-            response = chatClient.test();
-            skipResponse = true;
-        } else if(message.equals("\\clear")){
-            messagePanel.removeAll();
-            ChatHistoryManipulator chatHistory = new ChatHistoryManipulator();
-            chatHistory.clearChatHistory();
-            response = "Chat cleared!";
-            skipResponse = true;
-        } else {
-            response = chatClient.sendMessage(message);
+        try {
+            switch (message) {
+                case "\\debug" -> response = chatClient.debug();
+                case "\\explain" -> response = chatClient.explain();
+                case "\\test" -> {
+                    response = chatClient.test();
+                    skipResponse = true;
+                }
+                case "\\clear" -> {
+                    messagePanel.removeAll();
+                    ChatHistoryManipulator chatHistory = new ChatHistoryManipulator();
+                    chatHistory.clearChatHistory();
+                    response = "Chat cleared!";
+                    skipResponse = true;
+                }
+                default -> response = chatClient.sendMessage(message);
+            }
+
+            if(!skipResponse){
+                String[] messageParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
+
+
+                messagePanel.add(new ChatResponseField(messageParts, project, this));
+                messagePanel.revalidate();
+
+            }
+        } catch (Exception e) {
+            chatClient.getRequestFormat().removeLastMessage();
+            sendChatAlert("An error occurred while sending the message. Please try again.");
         }
-
-        if(!skipResponse){
-            String[] messageParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
-
-
-            messagePanel.add(new ChatResponseField(messageParts, project, this));
-            messagePanel.revalidate();
-
-        }
-
     }
 
     private void initChatMessages() {
@@ -169,6 +150,7 @@ public class ChatWindow {
     public void sendChatAlert(String message) {
         // Send chat alert
         message = "<font color=\"red\">" + message + "</font>";
-        sendMessage(message);
+        messagePanel.add(new ChatResponseField(message, project, this));
+        messagePanel.revalidate();
     }
 }

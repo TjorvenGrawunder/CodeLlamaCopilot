@@ -25,7 +25,7 @@ public class CustomModelRequestFormat implements CompletionRequestFormat {
     }
 
     @Override
-    public HttpRequest getRequest(CodeSnippet code) {
+    public HttpRequest getRequest(CodeSnippet code) throws JsonProcessingException {
         String data = String.format("%s %s %s %s %s", prefixIdentifier, code.prefix(), suffixIdentifier, code.suffix(), midIdentifier);
         CustomRequestObject requestObject = new CustomRequestObject(data, new CustomRequestParameters(model));
         return getHttpRequest(requestObject, apiURL);
@@ -34,11 +34,6 @@ public class CustomModelRequestFormat implements CompletionRequestFormat {
     @Override
     public String parseResponse(String response) {
         return null;
-    }
-
-    @Override
-    public HttpRequest getCommentRequest(String comment) {
-        throw new UnsupportedOperationException("Not supported in CompletionRequestFormat classes");
     }
 
     @Override

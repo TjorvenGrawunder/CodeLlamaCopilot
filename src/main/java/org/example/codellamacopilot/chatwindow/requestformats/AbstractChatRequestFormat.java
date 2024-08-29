@@ -41,7 +41,7 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
     }
 
 
-    public HttpRequest getRequest(String message) {
+    public HttpRequest getRequest(String message) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -56,28 +56,21 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
 
         String apiToken = CopilotSettingsState.getInstance().chatApiToken;
 
-        try {
-            return HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL))
-                    .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestObject)))
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + apiToken)
-                    .header("accept", "application/json")
-                    .build();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return HttpRequest.newBuilder()
+                .uri(URI.create(API_URL))
+                .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestObject)))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + apiToken)
+                .header("accept", "application/json")
+                .build();
+
 
     }
 
-    public String parseResponse(String response) {
+    public String parseResponse(String response) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ChatGPTResponseObject responseObject;
-        try {
-            responseObject = mapper.readValue(response, ChatGPTResponseObject.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        responseObject = mapper.readValue(response, ChatGPTResponseObject.class);
         response = responseObject.getChoices()[0].getMessage().getContent();
         if (PERSISTENT_CHAT_HISTORY){
             chatHistory.addMessage(new MessageObject("assistant", response));
@@ -96,6 +89,10 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
                 chatHistory.addCodeContext(new MessageObject("system", "Background information code:\n" + textEditor.getEditor().getDocument().getText()));
             }
         }
+    }
+
+    public void removeLastMessage(){
+        chatHistory.removeLastMessage();
     }
 
     public String getModel(){

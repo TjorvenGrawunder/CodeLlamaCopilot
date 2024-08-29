@@ -12,9 +12,8 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 
 public interface CompletionRequestFormat {
-    HttpRequest getRequest(CodeSnippet data);
+    HttpRequest getRequest(CodeSnippet data) throws JsonProcessingException;
     String parseResponse(String response) throws IOException;
-    HttpRequest getCommentRequest(String comment);
     void setModel(String model);
     String getName();
 
@@ -25,21 +24,18 @@ public interface CompletionRequestFormat {
      * @param apiURL The URL to send the request to
      * @return The HttpRequest object
      */
-    default HttpRequest getHttpRequest(RequestObject requestObject, StringBuilder apiURL) {
+    default HttpRequest getHttpRequest(RequestObject requestObject, StringBuilder apiURL) throws JsonProcessingException {
         // Get API Token for the currently used model
         String apiToken = CopilotSettingsState.getInstance().apiToken;
         ObjectMapper mapper = new ObjectMapper();
         // Don't include null values in the JSON
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        try {
-            return HttpRequest.newBuilder()
-                    .uri(URI.create(apiURL.toString()))
-                    .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestObject)))
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + apiToken).build();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return HttpRequest.newBuilder()
+                .uri(URI.create(apiURL.toString()))
+                .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestObject)))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + apiToken).build();
+
     }
 }

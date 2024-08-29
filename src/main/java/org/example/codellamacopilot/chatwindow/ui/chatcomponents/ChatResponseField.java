@@ -17,6 +17,10 @@ public class ChatResponseField extends JPanel {
 
     private ChatWindow chatWindow;
 
+    public ChatResponseField(String response, Project project, ChatWindow chatWindow){
+        this(new String[]{response}, project, chatWindow);
+    }
+
     public ChatResponseField(String[] response, Project project, ChatWindow chatWindow) {
         super();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

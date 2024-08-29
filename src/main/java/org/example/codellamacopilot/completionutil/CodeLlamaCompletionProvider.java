@@ -80,7 +80,7 @@ public class CodeLlamaCompletionProvider implements InlineCompletionProvider {
                                  Suffix: %s""", commentCodeSnippetTuple.getComment(), commentCodeSnippetTuple.getCodeSnippet().prefix(), commentCodeSnippetTuple.getCodeSnippet().suffix());
                         response = chatClient.sendMessage( message);
                         ProgressManager.checkCanceled();
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException | IOException e) {
                         throw new RuntimeException(e);
                     }
                     return FlowKt.flowOf(new InlineCompletionElement(response));

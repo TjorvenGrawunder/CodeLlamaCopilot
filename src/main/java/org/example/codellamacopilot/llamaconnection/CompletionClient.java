@@ -1,5 +1,6 @@
 package org.example.codellamacopilot.llamaconnection;
 
+import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.example.codellamacopilot.util.CodeSnippet;
 
 import java.io.IOException;
@@ -9,24 +10,19 @@ import java.net.http.HttpResponse;
 
 public class CompletionClient {
 
-    private final CompletionRequestFormat REQUEST_FORMAT;
+    private CompletionRequestFormat requestFormat;
     private final HttpClient CLIENT;
 
     public CompletionClient(CompletionRequestFormat completionRequestFormat) {
-        this.REQUEST_FORMAT = completionRequestFormat;
+        this.requestFormat = completionRequestFormat;
         this.CLIENT = HttpClient.newHttpClient();
     }
 
     public String sendData(CodeSnippet data) throws IOException, InterruptedException {
-        HttpRequest request = REQUEST_FORMAT.getRequest(data);
+        //Get current completion request format from the settings
+        requestFormat = CopilotSettingsState.getInstance().getUsedCompletionRequestFormat();
+        HttpRequest request = requestFormat.getRequest(data);
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-        return REQUEST_FORMAT.parseResponse(response.body());
-    }
-
-    public String sendComment(String comment) throws IOException, InterruptedException {
-        HttpRequest request = REQUEST_FORMAT.getCommentRequest(comment);
-        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println("Response: " + response.body());
-        return REQUEST_FORMAT.parseResponse(response.body());
+        return requestFormat.parseResponse(response.body());
     }
 }

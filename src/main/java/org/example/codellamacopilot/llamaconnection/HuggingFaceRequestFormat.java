@@ -21,25 +21,28 @@ public class HuggingFaceRequestFormat implements CompletionRequestFormat, Serial
 
     private final StringBuilder API_URL = new StringBuilder("https://api-inference.huggingface.co/models/");
     private boolean appended = false;
+    String prefix = "<Pref>";
+    String suffix = "<SUF>";
+    String middle = "<MID>";
 
     public HuggingFaceRequestFormat() {
-        API_URL.append("codellama/CodeLlama-7b-hf");
-        appended = true;
+        this("codellama/CodeLlama-7b-hf");
     }
 
     public HuggingFaceRequestFormat(String model) {
         API_URL.append(model);
         appended = true;
+        choosePrefixSuffixIdentifier(model);
     }
 
 
     @Override
-    public HttpRequest getRequest(CodeSnippet code) {
-        String data = String.format("<Pref> %s <SUF> %s <MID>", code.prefix(), code.suffix());
+    public HttpRequest getRequest(CodeSnippet code) throws JsonProcessingException {
+        String data = String.format("%s %s %s %s %s", prefix, code.prefix(), suffix, code.suffix(), middle);
         HuggingFaceRequestObject requestObject = new HuggingFaceRequestObject(data, new HuggingFaceRequestParameters(
                 null, null, null, 0.9f, 250, 0.01f,
                 false, 3, null));
-        return getHttpRequest(requestObject);
+        return getHttpRequest(requestObject, API_URL);
     }
 
     @Override
@@ -54,7 +57,7 @@ public class HuggingFaceRequestFormat implements CompletionRequestFormat, Serial
         return list.get(0).getGeneratedCode().replaceAll("<EOT>","");
     }
 
-    @Override
+    /*@Override
     public HttpRequest getCommentRequest(String comment) {
         comment = "Please implement the following comment in java! Comment: " + comment +
                 "The implemtation of the comment is ";
@@ -62,23 +65,7 @@ public class HuggingFaceRequestFormat implements CompletionRequestFormat, Serial
                 null, null, null, 0.9f, 250, 0.01f,
                 false, null, null));
         return getHttpRequest(requestObject);
-    }
-
-    private HttpRequest getHttpRequest(HuggingFaceRequestObject requestObject) {
-        String apiToken = CopilotSettingsState.getInstance().apiToken;
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-        try {
-            return HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL.toString()))
-                    .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestObject)))
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + apiToken).build();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    }*/
 
     public void setModel(String model) {
         if (appended) {
@@ -87,6 +74,19 @@ public class HuggingFaceRequestFormat implements CompletionRequestFormat, Serial
         }
         API_URL.append("https://api-inference.huggingface.co/models/").append(model);
         appended = true;
+    }
+
+    private void choosePrefixSuffixIdentifier(String model){
+        model = model.split("/")[0];
+        if(model.equals("codellama")) {
+            this.prefix = "<Pref>";
+            this.suffix = "<SUF>";
+            this.middle = "<MID>";
+        }else if (model.equals("bigcode")) {
+            this.prefix = "<fim_prefix>";
+            this.suffix = "<fim_suffix>";
+            this.middle = "<fim_middle>";
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.example.codellamacopilot.chatwindow.requestformats;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.intellij.openapi.project.Project;
 import java.io.IOException;
 import java.net.http.HttpRequest;
@@ -10,7 +11,7 @@ public interface ChatRequestFormat {
      * @param message the chat message to send to the server
      * @return HttpRequest to send to the server
      */
-    HttpRequest getRequest(String message);
+    HttpRequest getRequest(String message) throws JsonProcessingException;
 
     /**
      * Parse the incoming json response from the server
@@ -37,5 +38,7 @@ public interface ChatRequestFormat {
     void setModel(String model);
 
     String getName();
+
+    void removeLastMessage();
 
 }
