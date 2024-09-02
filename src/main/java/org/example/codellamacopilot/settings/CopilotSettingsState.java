@@ -84,11 +84,11 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
         };
     }
 
-    public ChatRequestFormat getUsedChatRequestFormat() {
+    public ChatRequestFormat getUsedChatRequestFormat(boolean persistentChatHistory) {
         return switch (usedChatModel) {
-            case "ChatGPT" -> chatGPTSpecificSettings.getChatRequestFormat();
-            case "PerplexityAI" -> perplexityAISpecificSettings.getChatRequestFormat();
-            case "Custom" -> customChatModelSpecificSettings.getChatRequestFormat();
+            case "ChatGPT" -> chatGPTSpecificSettings.getChatRequestFormat(persistentChatHistory);
+            case "PerplexityAI" -> perplexityAISpecificSettings.getChatRequestFormat(persistentChatHistory);
+            case "Custom" -> customChatModelSpecificSettings.getChatRequestFormat(persistentChatHistory);
             default -> null;
         };
     }

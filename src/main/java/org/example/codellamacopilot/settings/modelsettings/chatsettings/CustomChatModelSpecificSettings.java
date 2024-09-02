@@ -33,8 +33,8 @@ public class CustomChatModelSpecificSettings extends ChatModelSpecificSettings{
     }
 
     @Override
-    public ChatRequestFormat getChatRequestFormat() {
-        return new CustomChatRequestFormat(urlTextField.getText(), modelTextField.getText());
+    public ChatRequestFormat getChatRequestFormat(boolean persistentChatHistory) {
+        return new CustomChatRequestFormat(urlTextField.getText(), modelTextField.getText(), persistentChatHistory);
     }
 
     @Override

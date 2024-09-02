@@ -32,8 +32,8 @@ public class ChatGPTSpecificSettings extends ChatModelSpecificSettings {
     }
 
     @Override
-    public ChatRequestFormat getChatRequestFormat() {
-        return new ChatGPTRequestFormat((String) chatModelComboBox.getSelectedItem());
+    public ChatRequestFormat getChatRequestFormat(boolean persistentChatHistory) {
+        return new ChatGPTRequestFormat((String) chatModelComboBox.getSelectedItem(), persistentChatHistory);
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public abstract class ChatModelSpecificSettings extends JPanel implements ModelSpecificSettingsIdentifier {
-    public abstract ChatRequestFormat getChatRequestFormat();
+    public abstract ChatRequestFormat getChatRequestFormat(boolean persistentChatHistory);
     public abstract String getChatApiToken();
     public abstract void setChatApiToken(String chatApiToken);
     public abstract String getSelectedModel();

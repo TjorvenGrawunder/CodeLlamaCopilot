@@ -39,7 +39,7 @@ public class ChatWindow {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        this.chatClient = new ChatClient(this.project, CopilotSettingsState.getInstance().getUsedChatRequestFormat(), true);
+        this.chatClient = new ChatClient(this.project, CopilotSettingsState.getInstance().getUsedChatRequestFormat(true), true);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));

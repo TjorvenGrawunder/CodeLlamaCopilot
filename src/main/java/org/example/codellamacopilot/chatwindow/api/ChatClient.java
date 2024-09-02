@@ -23,10 +23,12 @@ public class ChatClient {
     private final Project PROJECT;
     private ChatRequestFormat requestFormat;
     private final HttpClient CLIENT = HttpClient.newHttpClient();
+    private final boolean PERSISTENT_CHAT_HISTORY;
 
     public ChatClient(Project project, ChatRequestFormat requestFormat, boolean persistentChatHistory) {
         this.PROJECT = project;
         this.requestFormat = requestFormat.getNewInstance(persistentChatHistory);
+        this.PERSISTENT_CHAT_HISTORY = persistentChatHistory;
     }
 
     /**
@@ -36,7 +38,7 @@ public class ChatClient {
      */
     public String sendMessage(String message) throws IOException, InterruptedException, ErrorMessageException {
         //Get current chat request format from the settings
-        requestFormat = CopilotSettingsState.getInstance().getUsedChatRequestFormat();
+        requestFormat = CopilotSettingsState.getInstance().getUsedChatRequestFormat(PERSISTENT_CHAT_HISTORY);
         requestFormat.addCodeContext(PROJECT);
         HttpRequest request = requestFormat.getRequest(message);
         HttpResponse<String> response;

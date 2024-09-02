@@ -1,10 +1,14 @@
 package org.example.codellamacopilot.chatwindow.ui.chatcomponents;
 
 
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.components.JBScrollPane;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.nodes.Document;
 
@@ -24,11 +28,15 @@ public class ChatCodeField extends JPanel {
         super();
         this.PROJECT = project;
         this.chatWindow = chatWindow;
+        JBScrollPane scrollPane = new JBScrollPane();
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.setLayout(new BorderLayout());
         JTextPane textPane = new JTextPane();
 
         JButton copyButton = new JButton("Copy");
         JButton createClassButton = new JButton("Create Class");
+        JButton insertAtCaretButton = new JButton("Insert");
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
@@ -37,6 +45,8 @@ public class ChatCodeField extends JPanel {
         String code = html.text();
         if(code.contains("class")){
             buttonPanel.add(createClassButton);
+        } else{
+            buttonPanel.add(insertAtCaretButton);
         }
 
         copyButton.addActionListener(e -> {
@@ -50,6 +60,11 @@ public class ChatCodeField extends JPanel {
             createClassFile(code);
         });
 
+        insertAtCaretButton.addActionListener(e -> {
+            // Insert code at caret
+            insertCodeAtCaret(code);
+        });
+
         this.add(buttonPanel, BorderLayout.NORTH);
 
         textPane.setContentType("text/html");
@@ -59,35 +74,47 @@ public class ChatCodeField extends JPanel {
         textPane.setOpaque(true);
 
 
-        this.add(textPane, BorderLayout.CENTER);
+        scrollPane.setViewportView(textPane);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
     private void createClassFile(String code) {
-        {
-            try{
-                // Create class file from code
-                com.intellij.openapi.editor.Document currentDocument = FileEditorManager.getInstance(PROJECT)
-                        .getSelectedTextEditor().getDocument();
-                VirtualFile documentFile = FileDocumentManager.getInstance().getFile(currentDocument);
-                if (documentFile != null) {
-                    //Extract the class name from the code
-                    String className = code.substring(code.indexOf("class") + 5, code.indexOf("{")).trim();
-                    String filePath = documentFile.getPath()
-                            .replace(documentFile.getName(), className + ".java");
-                    //Create the file
-                    try {
-                        File file = new File(filePath);
-                        if (file.createNewFile()) {
-                            FileUtils.writeStringToFile(file, code, "UTF-8", false);
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+        try{
+            // Create class file from code
+            com.intellij.openapi.editor.Document currentDocument = FileEditorManager.getInstance(PROJECT)
+                    .getSelectedTextEditor().getDocument();
+            VirtualFile documentFile = FileDocumentManager.getInstance().getFile(currentDocument);
+            if (documentFile != null) {
+                //Extract the class name from the code
+                String className = code.substring(code.indexOf("class") + 5, code.indexOf("{")).trim();
+                String filePath = documentFile.getPath()
+                        .replace(documentFile.getName(), className + ".java");
+                //Create the file
+                try {
+                    File file = new File(filePath);
+                    if (file.createNewFile()) {
+                        FileUtils.writeStringToFile(file, code, "UTF-8", false);
                     }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            }catch (NullPointerException e){
-                //Send an alert if no editor is selected
-                chatWindow.sendChatAlert("Please select a editor to create the class in the same folder.", "");
             }
+        }catch (NullPointerException e){
+            //Send an alert if no editor is selected
+            chatWindow.sendChatAlert("Please select a editor to create the class in the same folder.", "");
         }
+    }
+
+    private void insertCodeAtCaret(String code) {
+        // Insert code at caret
+        com.intellij.openapi.editor.Document currentDocument = FileEditorManager.getInstance(PROJECT)
+                .getSelectedTextEditor().getDocument();
+        int offset = FileEditorManager.getInstance(PROJECT)
+                .getSelectedTextEditor().getCaretModel().getOffset();
+        Application application = ApplicationManager.getApplication();
+
+        WriteCommandAction.runWriteCommandAction(PROJECT, () -> {
+            currentDocument.insertString(offset, code);
+        });
     }
 }

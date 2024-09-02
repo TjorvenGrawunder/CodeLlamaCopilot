@@ -30,8 +30,8 @@ public class PerplexityAISpecificSettings extends ChatModelSpecificSettings {
     }
 
     @Override
-    public ChatRequestFormat getChatRequestFormat() {
-        return new PerplexityAIRequestFormat((String) chatModelComboBox.getSelectedItem());
+    public ChatRequestFormat getChatRequestFormat(boolean persistentChatHistory) {
+        return new PerplexityAIRequestFormat((String) chatModelComboBox.getSelectedItem(), persistentChatHistory);
     }
 
     @Override
