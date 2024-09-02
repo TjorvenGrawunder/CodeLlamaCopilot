@@ -1,0 +1,10 @@
+{
+  "icons": {
+    "expui": {
+      "sendIcons": {
+        "send.svg": "icons/sendIcons/send.svg",
+        "send_dark.svg": "icons/sendIcons/send_dark.svg"
+      }
+    }
+  }
+}

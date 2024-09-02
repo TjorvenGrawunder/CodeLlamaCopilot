@@ -2,7 +2,12 @@ package org.example.codellamacopilot.chatwindow.ui.chatcomponents;
 
 
 import com.google.common.base.Throwables;
+import com.intellij.icons.AllIcons;
+import com.intellij.ide.ui.UISettings;
+import com.intellij.ide.ui.UISettingsListener;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
+import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.AnimatedIcon;
@@ -11,14 +16,17 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.fields.ExpandableTextField;
 import com.intellij.ui.components.fields.ExtendableTextComponent;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import com.intellij.util.messages.MessageBus;
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
 
 import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 import org.example.codellamacopilot.dialogs.StackTraceDialogWrapper;
 import org.example.codellamacopilot.exceptions.ErrorMessageException;
+import org.example.codellamacopilot.icons.LLMCopilotIcons;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 
 import java.awt.*;
@@ -33,11 +41,15 @@ public class ChatWindow {
     private ExpandableTextField inputField;
     private ChatClient chatClient;
     private Project project;
+    private ExtendableTextComponent.Extension sendExtension;
 
     public ChatWindow(Project project) {
         this.project = project;
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
+
+        MessageBus bus = ApplicationManager.getApplication().getMessageBus();
+        bus.connect().subscribe(UISettingsListener.TOPIC, (UISettingsListener) this::reloadChatMessages);
 
         this.chatClient = new ChatClient(this.project, CopilotSettingsState.getInstance().getUsedChatRequestFormat(true), true);
 
@@ -50,27 +62,14 @@ public class ChatWindow {
 
         inputField = new ExpandableTextField();
 
+        boolean isDark = EditorColorsManager.getInstance().isDarkEditor();
+        sendExtension = ExtendableTextComponent.Extension.create(
+                isDark ? LLMCopilotIcons.SendIconDark: LLMCopilotIcons.SendIconLight, "Send message", this::onSendClick);
+
+        inputField.addExtension(sendExtension);
+
         inputField.addActionListener(e -> {
-
-            inputField.setEnabled(false);
-            String message = inputField.getText();
-            inputField.setText("");
-            inputField.addExtension(ExtendableTextComponent.Extension.create(new AnimatedIcon.Default(), null, null));
-
-            ApplicationManager.getApplication().executeOnPooledThread(() -> {
-
-                ProgressManager.checkCanceled();
-                sendMessage(message);
-
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    inputField.removeExtension(inputField.getExtensions().get(inputField.getExtensions().size() - 1));
-                    inputField.setEnabled(true);
-
-                    //Scroll to the bottom of the chat
-                    JScrollBar vertical = scrollPane.getVerticalScrollBar();
-                    vertical.setValue(vertical.getMaximum());
-                });
-            });
+            onSendClick();
         });
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -133,29 +132,42 @@ public class ChatWindow {
 
     private void initChatMessages() {
         ChatHistoryManipulator chatHistoryManipulator = new ChatHistoryManipulator();
-        if(chatHistoryManipulator.getMessages().size() == 1 + chatHistoryManipulator.getContextCounter()) {
+        if (chatHistoryManipulator.getMessages().size() == 1 + chatHistoryManipulator.getContextCounter()) {
             // Initialize chat messages
             ChatElement chatElement = new ChatElement("Hello! I'm your personal programming assistant. How can I help you today?");
             messagePanel.add(chatElement);
         }
-        for (MessageObject message : chatHistoryManipulator.getMessages()) {
-            if(message.getRole().equals("user")) {
-                ChatElement chatElement = new ChatElement(message.getContent());
-                messagePanel.add(chatElement);
-            }else if (message.getRole().equals("assistant")) {
-                String[] messageParts = message.getContent().split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
-                ChatResponseField chatResponseField = new ChatResponseField(messageParts, project, this);
-                messagePanel.add(chatResponseField);
+        ApplicationManager.getApplication().invokeLater(() -> {
+            for (MessageObject message : chatHistoryManipulator.getMessages()) {
+                if (message.getRole().equals("user")) {
+                    ChatElement chatElement = new ChatElement(message.getContent());
+                    messagePanel.add(chatElement);
+                } else if (message.getRole().equals("assistant")) {
+                    String[] messageParts = message.getContent().split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
+                    ChatResponseField chatResponseField = new ChatResponseField(messageParts, project, this);
+                    messagePanel.add(chatResponseField);
+                }
+                messagePanel.revalidate();
             }
-            messagePanel.revalidate();
 
             //Scroll to the bottom of the chat
-            ApplicationManager.getApplication().invokeLater(() -> {
-                JScrollBar vertical = scrollPane.getVerticalScrollBar();
-                vertical.setValue(vertical.getMaximum());
-            });
-        }
+            JScrollBar vertical = scrollPane.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
 
+        });
+    }
+
+
+    public void reloadChatMessages(UISettings uiSettings) {
+        messagePanel.removeAll();
+        ApplicationManager.getApplication().invokeLater(() -> {
+            inputField.removeExtension(sendExtension);
+            boolean isDark = EditorColorsManager.getInstance().isDarkEditor();
+            sendExtension = ExtendableTextComponent.Extension.create(
+                    isDark ? LLMCopilotIcons.SendIconDark : LLMCopilotIcons.SendIconLight, "Send message", this::onSendClick);
+            inputField.addExtension(sendExtension);
+        });
+        initChatMessages();
     }
 
     public void sendChatAlert(String message, String stackTrace) {
@@ -174,5 +186,28 @@ public class ChatWindow {
         errorPanel.add(showStacktraceButton, BorderLayout.SOUTH);
         messagePanel.add(errorPanel);
         messagePanel.revalidate();
+    }
+
+    private void onSendClick(){
+        inputField.setEnabled(false);
+        String message = inputField.getText();
+        inputField.setText("");
+        ExtendableTextComponent.Extension loadingExtension = ExtendableTextComponent.Extension.create(new AnimatedIcon.Default(), null, null);
+        inputField.addExtension(loadingExtension);
+
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+
+            ProgressManager.checkCanceled();
+            sendMessage(message);
+
+            ApplicationManager.getApplication().invokeLater(() -> {
+                inputField.removeExtension(loadingExtension);
+                inputField.setEnabled(true);
+
+                //Scroll to the bottom of the chat
+                JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
+            });
+        });
     }
 }

@@ -4,9 +4,10 @@ import com.intellij.lang.Language;
 import com.intellij.markdown.utils.lang.HtmlSyntaxHighlighter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.HtmlChunk;
+import com.vladsch.flexmark.ast.Document;
+import com.vladsch.flexmark.ast.Node;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.ast.Document;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -27,7 +28,7 @@ public class ChatResponseField extends JPanel {
         for (String s : response) {
 
             Parser parser = Parser.builder().build();
-            Document document = parser.parse(s);
+            Node document = parser.parse(s);
             HtmlRenderer renderer = HtmlRenderer.builder().build();
             org.jsoup.nodes.Document doc = Jsoup.parse(renderer.render(document));
 

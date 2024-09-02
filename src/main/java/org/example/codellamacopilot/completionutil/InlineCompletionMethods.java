@@ -1,12 +1,17 @@
 package org.example.codellamacopilot.completionutil;
 
-import com.intellij.codeInsight.inline.completion.InlineCompletionElement;
 import com.intellij.codeInsight.inline.completion.InlineCompletionRequest;
+import com.intellij.codeInsight.inline.completion.elements.InlineCompletionElement;
+import com.intellij.codeInsight.inline.completion.elements.InlineCompletionGrayTextElement;
+import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSingleSuggestion;
+import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSuggestion;
+import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionVariant;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
@@ -29,7 +34,7 @@ public class InlineCompletionMethods {
         this.INLINE_COMPLETION_REQUEST = inlineCompletionRequest;
     }
 
-    public Flow<InlineCompletionElement> getProposals() {
+    public InlineCompletionSuggestion getProposals() {
         CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().getUsedCompletionRequestFormat());
         ChatClient chatClient = new ChatClient(INLINE_COMPLETION_REQUEST.getEditor().getProject(), CopilotSettingsState.getInstance().getUsedChatRequestFormat(false), false);
         Project currentProject = INLINE_COMPLETION_REQUEST.getEditor().getProject();
@@ -85,7 +90,8 @@ public class InlineCompletionMethods {
                              Suffix: %s""", commentCodeSnippetTuple.getComment(), commentCodeSnippetTuple.getCodeSnippet().prefix(), commentCodeSnippetTuple.getCodeSnippet().suffix());
                     response = chatClient.sendMessage( message);
                     ProgressManager.checkCanceled();
-                    return FlowKt.flowOf(new InlineCompletionElement(response));
+                    Flow<InlineCompletionElement> flow = FlowKt.flowOf(new InlineCompletionGrayTextElement(response));
+                    return InlineCompletionSingleSuggestion.Companion.build(new UserDataHolderBase(), flow);
                 }
             } catch (InterruptedException | ExecutionException | IOException | ErrorMessageException e) {
                 throw new RuntimeException(e);
@@ -112,7 +118,8 @@ public class InlineCompletionMethods {
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
-            return FlowKt.flowOf(new InlineCompletionElement(response));
+            Flow<InlineCompletionElement> flow = FlowKt.flowOf(new InlineCompletionGrayTextElement(response));
+            return InlineCompletionSingleSuggestion.Companion.build(new UserDataHolderBase(), flow);
         }
 
         return null;

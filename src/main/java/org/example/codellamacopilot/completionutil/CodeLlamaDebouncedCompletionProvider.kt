@@ -1,9 +1,7 @@
 package org.example.codellamacopilot.completionutil
 
-import com.intellij.codeInsight.inline.completion.DebouncedInlineCompletionProvider
-import com.intellij.codeInsight.inline.completion.InlineCompletionElement
-import com.intellij.codeInsight.inline.completion.InlineCompletionEvent
-import com.intellij.codeInsight.inline.completion.InlineCompletionRequest
+import com.intellij.codeInsight.inline.completion.*
+import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSuggestion
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.example.codellamacopilot.settings.CopilotSettingsState
@@ -12,6 +10,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class CodeLlamaDebouncedCompletionProvider : DebouncedInlineCompletionProviderRebuild() {
+    override val id: InlineCompletionProviderID
+        get() = InlineCompletionProviderID("CodeLlamaDebouncedCompletionProvider")
     override val delay: Duration
         get() = 1.seconds
 
@@ -19,7 +19,7 @@ class CodeLlamaDebouncedCompletionProvider : DebouncedInlineCompletionProviderRe
         return false
     }
 
-    override suspend fun getProposalsDebounced(request: InlineCompletionRequest): Flow<InlineCompletionElement> {
+    override suspend fun getProposalsDebounced(request: InlineCompletionRequest): InlineCompletionSuggestion {
         val inlineCompletionMethods = InlineCompletionMethods(request)
         return inlineCompletionMethods.getProposals()
     }

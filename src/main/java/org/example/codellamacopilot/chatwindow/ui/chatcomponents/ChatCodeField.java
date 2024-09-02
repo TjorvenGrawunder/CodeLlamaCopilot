@@ -4,6 +4,8 @@ package org.example.codellamacopilot.chatwindow.ui.chatcomponents;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
+import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
@@ -29,10 +31,14 @@ public class ChatCodeField extends JPanel {
         this.PROJECT = project;
         this.chatWindow = chatWindow;
         JBScrollPane scrollPane = new JBScrollPane();
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        EditorColorsScheme scheme = EditorColorsManager.getInstance().getGlobalScheme();
+
         this.setLayout(new BorderLayout());
         JTextPane textPane = new JTextPane();
+        textPane.setBackground(scheme.getDefaultBackground());
 
         JButton copyButton = new JButton("Copy");
         JButton createClassButton = new JButton("Create Class");

@@ -1,8 +1,10 @@
 package org.example.codellamacopilot.completionutil
 
-import com.intellij.codeInsight.inline.completion.InlineCompletionElement
 import com.intellij.codeInsight.inline.completion.InlineCompletionProvider
 import com.intellij.codeInsight.inline.completion.InlineCompletionRequest
+import com.intellij.codeInsight.inline.completion.elements.InlineCompletionElement
+import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSuggestion
+import com.intellij.codeInsight.inline.completion.suggestion.invoke
 import com.intellij.openapi.application.ApplicationManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,7 +23,7 @@ abstract class DebouncedInlineCompletionProviderRebuild : InlineCompletionProvid
      * Returns a Flow of InlineCompletionElement objects with debounced proposals for the given InlineCompletionRequest.
      * Override [delay] to control debounce delay
      */
-    abstract suspend fun getProposalsDebounced(request: InlineCompletionRequest): Flow<InlineCompletionElement>
+    abstract suspend fun getProposalsDebounced(request: InlineCompletionRequest): InlineCompletionSuggestion
 
     /**
      * Forces the inline completion for the given request.
@@ -31,7 +33,7 @@ abstract class DebouncedInlineCompletionProviderRebuild : InlineCompletionProvid
      */
     abstract fun force(request: InlineCompletionRequest): Boolean
 
-    override suspend fun getProposals(request: InlineCompletionRequest): Flow<InlineCompletionElement> {
+    override suspend fun getSuggestion(request: InlineCompletionRequest): InlineCompletionSuggestion {
         if (ApplicationManager.getApplication().isUnitTestMode) {
             return getProposalsDebounced(request)
         }
@@ -47,14 +49,15 @@ abstract class DebouncedInlineCompletionProviderRebuild : InlineCompletionProvid
     /**
      * Returns a Flow of InlineCompletionElement objects with debounced proposals for the given InlineCompletionRequest.
      */
-    private suspend fun debounce(request: InlineCompletionRequest): Flow<InlineCompletionElement> {
+    private suspend fun debounce(request: InlineCompletionRequest): InlineCompletionSuggestion {
         try {
             jobCall?.cancel()
             jobCall = coroutineContext.job
             delay(delay)
             return getProposalsDebounced(request)
         } catch (_: CancellationException) {
-            return emptyFlow()
+            val suggestion = InlineCompletionSuggestion.Empty
+            return suggestion
         }
     }
 }
