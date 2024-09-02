@@ -76,8 +76,10 @@ public class InlineCompletionMethods {
                     ProgressManager.checkCanceled();
                     String message = String.format("""
                             Please implement the \
-                            following comment in java. Please pay attention to the given background information.\
-                             Only provide your new code without prefix, suffix and the given comment and dont use markdown. \
+                            following comment in java and fill the gap between prefix and suffix. \
+                            Please pay attention to the given background information.\
+                             Only provide your new code without prefix, suffix, the given comment and you are not allowed to create a new class. \
+                             Dont use Markdown.
                             Comment: %s\s
                              Prefix: %s\s
                              Suffix: %s""", commentCodeSnippetTuple.getComment(), commentCodeSnippetTuple.getCodeSnippet().prefix(), commentCodeSnippetTuple.getCodeSnippet().suffix());
