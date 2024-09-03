@@ -5,6 +5,8 @@ import com.google.common.base.Throwables;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.UISettings;
 import com.intellij.ide.ui.UISettingsListener;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.impl.ActionButton;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
@@ -26,6 +28,7 @@ import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.icons.LLMCopilotIcons;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -115,9 +118,10 @@ public class ChatWindow {
             if(!skipResponse){
                 String[] messageParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
 
-
-                messagePanel.add(new ChatResponseField(messageParts, project, this));
-                messagePanel.revalidate();
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    messagePanel.add(new ChatResponseField(messageParts, project, this));
+                    messagePanel.revalidate();
+                });
             }
         }catch (ErrorMessageException errorMessageException){
             chatClient.getRequestFormat().removeLastMessage();
@@ -173,19 +177,38 @@ public class ChatWindow {
     public void sendChatAlert(String message, String stackTrace) {
         // Send chat alert
         JPanel errorPanel = new JPanel(new BorderLayout());
-        JButton showStacktraceButton = new JButton("Show Stacktrace");
-        showStacktraceButton.addActionListener(e -> {
-            StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTrace);
-            stackTraceDialogWrapper.showAndGet();
-        });
-        if(stackTrace.isEmpty()){
-            showStacktraceButton.setVisible(false);
-        }
+        AnAction action = new AnAction() {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTrace);
+                stackTraceDialogWrapper.showAndGet();
+            }
+        };
+        action.getTemplatePresentation().setText("Show Stack-Trace");
+        action.getTemplatePresentation().setIcon(AllIcons.General.Error);
+
         message = "<font color=\"red\">" + message + "</font>";
-        errorPanel.add(new ChatResponseField(message, project, this), BorderLayout.CENTER);
-        errorPanel.add(showStacktraceButton, BorderLayout.SOUTH);
-        messagePanel.add(errorPanel);
-        messagePanel.revalidate();
+        String finalMessage = message;
+        ApplicationManager.getApplication().invokeLater(() ->{
+            errorPanel.add(new ChatResponseField(finalMessage, project, this), BorderLayout.CENTER);
+            if(!stackTrace.isEmpty()){
+
+                ActionGroup actionGroup = new ActionGroup() {
+                    @Override
+                    public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
+                        return new AnAction[]{action};
+                    }
+                };
+
+                ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar("CodeToolbar", actionGroup, true);
+                actionToolbar.setTargetComponent(errorPanel);
+
+                errorPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
+            }
+            messagePanel.add(errorPanel);
+            messagePanel.revalidate();
+        });
+
     }
 
     private void onSendClick(){
