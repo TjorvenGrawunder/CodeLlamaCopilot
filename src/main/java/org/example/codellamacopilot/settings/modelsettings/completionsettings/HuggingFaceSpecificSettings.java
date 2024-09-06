@@ -63,6 +63,8 @@ public class HuggingFaceSpecificSettings extends CompletionModelSpecificSettings
     private void addModels(){
         completionModelComboBox.addItem("codellama/CodeLlama-7b-hf");
         completionModelComboBox.addItem("codellama/CodeLlama-13b-hf");
+        completionModelComboBox.addItem("meta-llama/CodeLlama-7b-hf");
+        completionModelComboBox.addItem("meta-llama/CodeLlama-13b-hf");
         completionModelComboBox.addItem("bigcode/starcoder");
     }
 

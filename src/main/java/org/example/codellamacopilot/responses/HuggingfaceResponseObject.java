@@ -16,10 +16,12 @@ public class HuggingfaceResponseObject extends ResponseObject {
         this.generatedCode = generatedCode;
     }
 
+    @JsonProperty("error")
     public java.lang.String getError() {
         return error;
     }
 
+    @JsonProperty("error")
     public void setError(java.lang.String error) {
         this.error = error;
     }

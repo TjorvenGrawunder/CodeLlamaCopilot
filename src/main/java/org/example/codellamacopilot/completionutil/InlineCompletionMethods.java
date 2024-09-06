@@ -16,7 +16,10 @@ import com.intellij.util.concurrency.AppExecutorUtil;
 import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 import kotlinx.coroutines.flow.FlowKt;
+import org.assertj.core.util.Throwables;
 import org.example.codellamacopilot.chatwindow.api.ChatClient;
+import org.example.codellamacopilot.dialogs.StackTraceDialogWrapper;
+import org.example.codellamacopilot.exceptions.CompletionFailedException;
 import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.llamaconnection.CompletionClient;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
@@ -109,9 +112,18 @@ public class InlineCompletionMethods {
                 if (!(cb.get() == null)) {
                     try {
                         ProgressManager.checkCanceled();
+                        long startTime = System.currentTimeMillis();
                         response = client.sendData(cb.get());
+                        long endTime = System.currentTimeMillis();
+                        System.out.println("Time taken: " + (endTime - startTime) + "ms");
                         ProgressManager.checkCanceled();
-                    } catch (IOException | InterruptedException e) {
+                    } catch (CompletionFailedException e) {
+                        response = "";
+                        String stackTrace = Throwables.getStackTrace(e);
+                        StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTrace);
+                        stackTraceDialogWrapper.showAndGet();
+                    }
+                    catch (IOException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 }
