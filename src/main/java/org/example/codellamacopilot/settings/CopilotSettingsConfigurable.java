@@ -38,6 +38,7 @@ public final class CopilotSettingsConfigurable implements Configurable {
         modified |= !Objects.equals(copilotSettingsComponent.getSelectedCompletionModel(), settings.usedModel);
         modified |= !Objects.equals(copilotSettingsComponent.getSelectedChatModel(), settings.usedChatModel);
         modified |= copilotSettingsComponent.getUseCompletion() != settings.useCompletion;
+        modified |= copilotSettingsComponent.getUseChatAsCompletion() != settings.useChatAsCompletion;
         modified |= !copilotSettingsComponent.getChatGPTSpecificSettings().equals(settings.chatGPTSpecificSettings);
         modified |= !copilotSettingsComponent.getPerplexityAISpecificSettings().equals(settings.perplexityAISpecificSettings);
         modified |= !copilotSettingsComponent.getHuggingFaceSpecificSettings().equals(settings.huggingFaceSpecificSettings);
@@ -54,6 +55,7 @@ public final class CopilotSettingsConfigurable implements Configurable {
         settings.usedModel = copilotSettingsComponent.getSelectedCompletionModel();
         settings.usedChatModel = copilotSettingsComponent.getSelectedChatModel();
         settings.useCompletion = copilotSettingsComponent.getUseCompletion();
+        settings.useChatAsCompletion = copilotSettingsComponent.getUseChatAsCompletion();
         settings.chatGPTSpecificSettings = copilotSettingsComponent.getChatGPTSpecificSettings();
         settings.perplexityAISpecificSettings = copilotSettingsComponent.getPerplexityAISpecificSettings();
         settings.huggingFaceSpecificSettings = copilotSettingsComponent.getHuggingFaceSpecificSettings();
@@ -74,6 +76,7 @@ public final class CopilotSettingsConfigurable implements Configurable {
         copilotSettingsComponent.setHuggingFaceSpecificSettings(settings.huggingFaceSpecificSettings);
         copilotSettingsComponent.setCustomCompletionModelSpecificSettings(settings.customCompletionModelSpecificSettings);
         copilotSettingsComponent.setCustomChatModelSpecificSettings(settings.customChatModelSpecificSettings);
+        copilotSettingsComponent.setUseChatAsCompletion(settings.useChatAsCompletion);
     }
 
     @Override

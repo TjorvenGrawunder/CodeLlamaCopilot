@@ -22,10 +22,7 @@ public class CompletionClient {
         //Get current completion request format from the settings
         requestFormat = CopilotSettingsState.getInstance().getUsedCompletionRequestFormat();
         HttpRequest request = requestFormat.getRequest(data);
-        long startTime = System.currentTimeMillis();
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-        long endTime = System.currentTimeMillis();
-        System.out.println("Time taken to get response: " + (endTime - startTime) + "ms");
         return requestFormat.parseResponse(response.body());
     }
 }

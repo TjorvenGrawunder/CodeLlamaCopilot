@@ -32,20 +32,35 @@ public class ChatClient {
     }
 
     /**
-     * Sends a message to the chat model
+     * Sends a message to the chat model, without completion request
      * @param message the message to send
      * @return the response from the chat model
      */
     public String sendMessage(String message) throws IOException, InterruptedException, ErrorMessageException {
+        return sendMessage(message, false);
+    }
+
+    /**
+     * Sends a message to the chat model
+     * @param message the message to send
+     * @param completionRequest if true, the message is a completion request
+     * @return the response from the chat model
+     */
+    public String sendMessage(String message, boolean completionRequest) throws IOException, InterruptedException, ErrorMessageException {
         //Get current chat request format from the settings
         requestFormat = CopilotSettingsState.getInstance().getUsedChatRequestFormat(PERSISTENT_CHAT_HISTORY);
         requestFormat.addCodeContext(PROJECT);
-        HttpRequest request = requestFormat.getRequest(message);
+        HttpRequest request;
+        if (completionRequest) {
+            request = requestFormat.getCompletionRequest(message);
+        }else{
+            request = requestFormat.getRequest(message);
+        }
+
         HttpResponse<String> response;
 
         response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
         return requestFormat.parseResponse(response.body());
-
     }
 
     public String explain() throws IOException, InterruptedException, ErrorMessageException {

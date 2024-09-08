@@ -52,16 +52,19 @@ public class HuggingFaceRequestFormat implements CompletionRequestFormat, Serial
         ObjectMapper mapper = new ObjectMapper();
         TypeFactory typeFactory = mapper.getTypeFactory();
         System.out.println(response);
-        //TODO: Check for List before parsing
-        List<HuggingfaceResponseObject> list = mapper.readValue(response, typeFactory.constructCollectionType(List.class, HuggingfaceResponseObject.class));
-        CompletionPropositionsStorage.clearPropositions();
-        for (int i = 1; i < list.size(); i++) {
-            CompletionPropositionsStorage.addProposition(list.get(i).getGeneratedCode().replaceAll("<EOT>",""));
-        }
-        if (!Objects.equals(list.get(0).getGeneratedCode(), "")) {
+
+        // Check if the response is a list of objects or a single object
+        // if it is a single object the response will be an error
+        if (response.startsWith("[") && response.endsWith("]")) {
+            List<HuggingfaceResponseObject> list = mapper.readValue(response, typeFactory.constructCollectionType(List.class, HuggingfaceResponseObject.class));
+            CompletionPropositionsStorage.clearPropositions();
+            for (int i = 1; i < list.size(); i++) {
+                CompletionPropositionsStorage.addProposition(list.get(i).getGeneratedCode().replaceAll("<EOT>",""));
+            }
             return list.get(0).getGeneratedCode().replaceAll("<EOT>","");
         } else {
-            throw new CompletionFailedException(list.get(0).getError());
+            HuggingfaceResponseObject responseObject = mapper.readValue(response, HuggingfaceResponseObject.class);
+            throw new CompletionFailedException(responseObject.getError());
         }
     }
 

@@ -112,12 +112,15 @@ public class InlineCompletionMethods {
                 if (!(cb.get() == null)) {
                     try {
                         ProgressManager.checkCanceled();
-                        long startTime = System.currentTimeMillis();
-                        response = client.sendData(cb.get());
-                        long endTime = System.currentTimeMillis();
-                        System.out.println("Time taken: " + (endTime - startTime) + "ms");
-                        ProgressManager.checkCanceled();
-                    } catch (CompletionFailedException e) {
+                        if (CopilotSettingsState.getInstance().useChatAsCompletion) {
+                            response = chatClient.sendMessage("Prefix: " + cb.get().prefix() + "\nSuffix: "
+                                    + cb.get().suffix(), true);
+                            ProgressManager.checkCanceled();
+                        } else {
+                            response = client.sendData(cb.get());
+                            ProgressManager.checkCanceled();
+                        }
+                    } catch (ErrorMessageException | CompletionFailedException e) {
                         response = "";
                         String stackTrace = Throwables.getStackTrace(e);
                         StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTrace);

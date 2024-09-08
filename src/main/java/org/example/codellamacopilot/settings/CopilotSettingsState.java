@@ -49,6 +49,7 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
     public String chatApiToken;
 
     public boolean useCompletion;
+    public boolean useChatAsCompletion;
 
     public CopilotSettingsState() {
         usedModel = "huggingFaceRequestFormat";
@@ -61,6 +62,7 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
         apiToken = "";
         chatApiToken = "";
         useCompletion = false;
+        useChatAsCompletion = false;
     }
 
     public static CopilotSettingsState getInstance() {

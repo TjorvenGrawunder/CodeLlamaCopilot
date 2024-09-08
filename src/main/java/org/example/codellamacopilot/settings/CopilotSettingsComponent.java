@@ -35,6 +35,7 @@ public class CopilotSettingsComponent {
     private final ComboBox<String> CHAT_MODEL_COMBO_BOX = new ComboBox<>();
 
     private final JBCheckBox USE_COMPLETION_CHECKBOX = new JBCheckBox("Use completion");
+    private final JBCheckBox USE_CHAT_AS_COMPLETION = new JBCheckBox("Use chat model as completion");
 
     //Specific Completion Settings
     CompletionModelSpecificSettings[] completionModelSpecificSettings = {settingsInstance.huggingFaceSpecificSettings, settingsInstance.customCompletionModelSpecificSettings};
@@ -79,6 +80,7 @@ public class CopilotSettingsComponent {
                 .addComponent(USE_COMPLETION_CHECKBOX, 1)
                 .addLabeledComponent(new JLabel("Choose Completion Model: "), COMPLETION_MODEL_COMBO_BOX, 1, false)
                 .addComponent(COMPLETION_SETTINGS_PANEL, 1)
+                .addComponent(USE_CHAT_AS_COMPLETION, 1)
                 .addLabeledComponent(new JLabel("Choose Chat Model: "), CHAT_MODEL_COMBO_BOX, 1, false)
                 .addComponent(CHAT_SETTINGS_PANEL, 1)
                 .addComponentFillVertically(new JPanel(), 0)
@@ -138,6 +140,14 @@ public class CopilotSettingsComponent {
 
     public boolean getUseCompletion() {
         return USE_COMPLETION_CHECKBOX.isSelected();
+    }
+
+    public void setUseChatAsCompletion(boolean useChatAsCompletion) {
+        USE_CHAT_AS_COMPLETION.setSelected(useChatAsCompletion);
+    }
+
+    public boolean getUseChatAsCompletion() {
+        return USE_CHAT_AS_COMPLETION.isSelected();
     }
 
     public ChatGPTSpecificSettings getChatGPTSpecificSettings() {

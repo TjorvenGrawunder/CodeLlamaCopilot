@@ -14,9 +14,12 @@ import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTRe
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
+import org.example.codellamacopilot.util.CodeSnippet;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
 
@@ -64,8 +67,35 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
                 .header("Authorization", "Bearer " + apiToken)
                 .header("accept", "application/json")
                 .build();
+    }
 
+    public HttpRequest getCompletionRequest(String message) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
+        List<MessageObject> prompts = new ArrayList<>(){
+            {
+                add(new MessageObject("system", "You are an completion assistant that fill in the gap " +
+                        "between provided prefix and suffix. " +
+                        "Please only provide your generated code in the middle and dont use markdown."));
+            }
+        };
+
+        prompts.addAll(chatHistory.getCodeContext());
+        prompts.add(new MessageObject("user", message));
+
+        ChatGPTRequestObject requestObject;
+        requestObject = new ChatGPTRequestObject(model, prompts);
+
+        String apiToken = CopilotSettingsState.getInstance().chatApiToken;
+
+        return HttpRequest.newBuilder()
+                .uri(URI.create(API_URL))
+                .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestObject)))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + apiToken)
+                .header("accept", "application/json")
+                .build();
     }
 
     public String parseResponse(String response) throws JsonProcessingException, ErrorMessageException {

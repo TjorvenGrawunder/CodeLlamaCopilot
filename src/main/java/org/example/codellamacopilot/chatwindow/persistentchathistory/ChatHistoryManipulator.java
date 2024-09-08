@@ -39,6 +39,10 @@ public class ChatHistoryManipulator {
         incrementContextCounter();
     }
 
+    public List<MessageObject> getCodeContext() {
+        return state.systemPrompts.subList(1, state.systemPrompts.size());
+    }
+
     public void incrementContextCounter() {
         contextCounter++;
     }

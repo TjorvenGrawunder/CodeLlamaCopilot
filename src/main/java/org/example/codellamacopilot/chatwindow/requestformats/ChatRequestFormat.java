@@ -16,6 +16,14 @@ public interface ChatRequestFormat {
     HttpRequest getRequest(String message) throws JsonProcessingException;
 
     /**
+     * Get the completion request object from the message (Only used if user wants to use completion with chat model)
+     * @param message the chat message to send to the server
+     * @return HttpRequest to send to the server
+     * @throws JsonProcessingException
+     */
+    HttpRequest getCompletionRequest(String message) throws JsonProcessingException;
+
+    /**
      * Parse the incoming json response from the server
      * @param response the json response from the server
      * @return the response message as markdown string
