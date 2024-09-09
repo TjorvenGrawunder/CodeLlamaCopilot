@@ -1,21 +1,5 @@
 package org.example.codellamacopilot.chatwindow.requestformats;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.TextEditor;
-import com.intellij.openapi.project.Project;
-import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
-import org.example.codellamacopilot.chatwindow.requestobjects.chatgpt.ChatGPTRequestObject;
-import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTResponseObject;
-import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
-import org.example.codellamacopilot.settings.CopilotSettingsState;
-
-import java.net.URI;
-import java.net.http.HttpRequest;
-
 public class ChatGPTRequestFormat extends AbstractChatRequestFormat {
 
     private final String MODEL;

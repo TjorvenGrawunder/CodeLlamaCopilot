@@ -9,12 +9,12 @@ import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.annotations.Transient;
 import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
-import org.example.codellamacopilot.chatwindow.requestobjects.chatgpt.ChatGPTRequestObject;
+import org.example.codellamacopilot.chatwindow.requestobjects.chatgpt.ChatRequestObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ChatGPTResponseObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
+import org.example.codellamacopilot.chatwindow.responseobjects.custom.CustomChatResponseObject;
 import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
-import org.example.codellamacopilot.util.CodeSnippet;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -50,12 +50,12 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         MessageObject messageObject = new MessageObject("user", message);
-        ChatGPTRequestObject requestObject;
+        ChatRequestObject requestObject;
         if(PERSISTENT_CHAT_HISTORY){
             chatHistory.addMessage(messageObject);
-            requestObject = new ChatGPTRequestObject(model, chatHistory.getMessages());
+            requestObject = new ChatRequestObject(model, chatHistory.getMessages(), false);
         }else{
-            requestObject = new ChatGPTRequestObject(model, chatHistory.getSystemPromptsWithMessage(messageObject));
+            requestObject = new ChatRequestObject(model, chatHistory.getSystemPromptsWithMessage(messageObject), false);
         }
 
         String apiToken = CopilotSettingsState.getInstance().chatApiToken;
@@ -85,8 +85,8 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
         prompts.addAll(chatHistory.getCodeContext());
         prompts.add(new MessageObject("user", message));
 
-        ChatGPTRequestObject requestObject;
-        requestObject = new ChatGPTRequestObject(model, prompts);
+        ChatRequestObject requestObject;
+        requestObject = new ChatRequestObject(model, prompts, false);
 
         String apiToken = CopilotSettingsState.getInstance().chatApiToken;
 
@@ -101,14 +101,26 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
 
     public String parseResponse(String response) throws JsonProcessingException, ErrorMessageException {
         ObjectMapper mapper = new ObjectMapper();
-        ChatGPTResponseObject responseObject;
-        responseObject = mapper.readValue(response, ChatGPTResponseObject.class);
+        if(CopilotSettingsState.getInstance().usedChatModel.equals("Custom")){
+            CustomChatResponseObject responseObject;
+            responseObject = mapper.readValue(response, CustomChatResponseObject.class);
 
-        if (responseObject.getChoices() == null) {
-            throw new ErrorMessageException(responseObject.getError().getMessage());
-        } else {
-            response = responseObject.getChoices()[0].getMessage().getContent();
+            if(responseObject.getMessage() == null) {
+                throw new ErrorMessageException(responseObject.getError().getMessage());
+            }else {
+                response = responseObject.getMessage().getContent();
+            }
+        }else {
+            ChatGPTResponseObject responseObject;
+            responseObject = mapper.readValue(response, ChatGPTResponseObject.class);
+
+            if (responseObject.getChoices() == null) {
+                throw new ErrorMessageException(responseObject.getError().getMessage());
+            } else {
+                response = responseObject.getChoices()[0].getMessage().getContent();
+            }
         }
+
 
 
         if (PERSISTENT_CHAT_HISTORY && response != null) {

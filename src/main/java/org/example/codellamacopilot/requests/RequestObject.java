@@ -7,4 +7,5 @@ public abstract class RequestObject {
     public abstract void setInputData(String inputData);
     public abstract RequestParameters getParameters();
     public abstract void setParameters(RequestParameters parameters);
+
 }

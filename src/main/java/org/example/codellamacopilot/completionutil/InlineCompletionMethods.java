@@ -6,6 +6,7 @@ import com.intellij.codeInsight.inline.completion.elements.InlineCompletionGrayT
 import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSingleSuggestion;
 import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSuggestion;
 import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionVariant;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
@@ -97,9 +98,16 @@ public class InlineCompletionMethods {
                         }
                     } catch (ErrorMessageException | CompletionFailedException e) {
                         response = "";
-                        String stackTrace = Throwables.getStackTrace(e);
-                        StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTrace);
-                        stackTraceDialogWrapper.showAndGet();
+                        StackTraceElement[] stackTraceElements = e.getStackTrace();
+                        StringBuilder stackTraceBuilder = new StringBuilder();
+                        stackTraceBuilder.append(e.getMessage()).append("\n");
+                        for (StackTraceElement stackTraceElement : stackTraceElements) {
+                            stackTraceBuilder.append(stackTraceElement.toString()).append("\n");
+                        }
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTraceBuilder.toString());
+                            stackTraceDialogWrapper.showAndGet();
+                        });
                     }
                     catch (IOException | InterruptedException e) {
                         throw new RuntimeException(e);
