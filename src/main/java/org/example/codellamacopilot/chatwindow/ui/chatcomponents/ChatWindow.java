@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 import java.awt.*;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -119,7 +120,11 @@ public class ChatWindow {
                 String[] messageParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
 
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    messagePanel.add(new ChatResponseField(messageParts, project, this));
+                    try {
+                        messagePanel.add(new ChatResponseField(messageParts, project, this));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     messagePanel.revalidate();
                 });
             }
@@ -147,8 +152,7 @@ public class ChatWindow {
                     ChatElement chatElement = new ChatElement(message.getContent());
                     messagePanel.add(chatElement);
                 } else if (message.getRole().equals("assistant")) {
-                    String[] messageParts = message.getContent().split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
-                    ChatResponseField chatResponseField = new ChatResponseField(messageParts, project, this);
+                    ChatResponseField chatResponseField = getChatResponseField(message);
                     messagePanel.add(chatResponseField);
                 }
                 messagePanel.revalidate();
@@ -159,6 +163,17 @@ public class ChatWindow {
             vertical.setValue(vertical.getMaximum());
 
         });
+    }
+
+    private @NotNull ChatResponseField getChatResponseField(MessageObject message) {
+        String[] messageParts = message.getContent().split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|json|js|lua|make|markdown|php|python|r|sql|tex|yaml|text|xml|groovy|kotlin))|```");
+        ChatResponseField chatResponseField = null;
+        try {
+            chatResponseField = new ChatResponseField(messageParts, project, this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return chatResponseField;
     }
 
 
@@ -190,7 +205,11 @@ public class ChatWindow {
         message = "<font color=\"red\">" + message + "</font>";
         String finalMessage = message;
         ApplicationManager.getApplication().invokeLater(() ->{
-            errorPanel.add(new ChatResponseField(finalMessage, project, this), BorderLayout.CENTER);
+            try {
+                errorPanel.add(new ChatResponseField(finalMessage, project, this), BorderLayout.CENTER);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             if(!stackTrace.isEmpty()){
 
                 ActionGroup actionGroup = new ActionGroup() {

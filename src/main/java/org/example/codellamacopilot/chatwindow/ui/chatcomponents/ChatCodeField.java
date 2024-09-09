@@ -16,6 +16,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.options.MutableDataSet;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,9 +46,12 @@ public class ChatCodeField extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
+        JPanel spacePanel = new JPanel();
+        spacePanel.setPreferredSize(new Dimension(5, 0));
+
         EditorColorsScheme scheme = EditorColorsManager.getInstance().getGlobalScheme();
 
-        this.setLayout(new BorderLayout());
+        this.setLayout(new BorderLayout(3, 0));
         JTextPane textPane = new JTextPane();
         textPane.setBackground(scheme.getDefaultBackground());
 
@@ -105,6 +111,7 @@ public class ChatCodeField extends JPanel {
 
 
         scrollPane.setViewportView(textPane);
+        this.add(spacePanel, BorderLayout.WEST);
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -119,7 +126,6 @@ public class ChatCodeField extends JPanel {
             String className = code.substring(code.indexOf("class") + 5, code.indexOf("{")).trim();
             String filePath = documentFile.getPath()
                     .replace(documentFile.getName(), className + ".java");
-            System.out.println("File created at:" + filePath);
             //Create the file
             try {
                 createFileUntilSuccess(filePath, code);

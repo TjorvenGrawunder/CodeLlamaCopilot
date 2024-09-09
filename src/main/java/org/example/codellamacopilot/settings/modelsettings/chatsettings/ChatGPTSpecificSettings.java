@@ -2,6 +2,7 @@ package org.example.codellamacopilot.settings.modelsettings.chatsettings;
 
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.util.ui.FormBuilder;
+import com.intellij.util.xmlb.annotations.Transient;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatGPTRequestFormat;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
 

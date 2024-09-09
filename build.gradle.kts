@@ -62,6 +62,10 @@ dependencies {
     implementation("es.nitaur.markdown:txtmark:0.16")
     // https://mvnrepository.com/artifact/com.vladsch.flexmark/flexmark
     implementation("com.vladsch.flexmark:flexmark:0.9.1")
+    // https://mvnrepository.com/artifact/org.webjars/highlightjs
+    implementation("org.webjars:highlightjs:11.10.0")
+    // https://mvnrepository.com/artifact/org.webjars/webjars-locator
+    implementation("org.webjars:webjars-locator:0.52")
     implementation(jxbrowser.core)
     implementation(jxbrowser.crossPlatform)
     implementation(jxbrowser.swing)
