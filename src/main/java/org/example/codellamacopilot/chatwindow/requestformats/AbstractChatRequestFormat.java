@@ -76,7 +76,8 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
         List<MessageObject> prompts = new ArrayList<>(){
             {
                 add(new MessageObject("system", "You are an completion assistant that fill in the gap " +
-                        "between provided prefix and suffix. " +
+                        "between provided prefix and suffix. If the prefix ends with a comment you should implement the content of" +
+                        "this comment. " +
                         "Please only provide your generated code in the middle and dont use markdown."));
             }
         };
