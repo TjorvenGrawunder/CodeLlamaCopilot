@@ -21,6 +21,9 @@ import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Abstract class for the chat request format
+ */
 public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
 
     private final String API_URL;
@@ -45,6 +48,14 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
     }
 
 
+    /**
+     * Get a request from the message.
+     * Message Object will be added to the chat history if PERSISTENT_CHAT_HISTORY is true
+     * If PERSISTENT_CHAT_HISTORY is false, the message will be added to the system prompts and send separately
+     * @param message the chat message to send to the server
+     * @return HttpRequest to send to the server
+     * @throws JsonProcessingException
+     */
     public HttpRequest getRequest(String message) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -69,6 +80,13 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
                 .build();
     }
 
+    /**
+     * Get a completion request from the message
+     * Used for code completion with chat model
+     * @param message the chat message to send to the server
+     * @return HttpRequest to send to the server
+     * @throws JsonProcessingException
+     */
     public HttpRequest getCompletionRequest(String message) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -99,6 +117,14 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
                 .build();
     }
 
+    /**
+     * Reads the response from the server and returns the response message
+     * If the response contains an error, an exception is thrown
+     * @param response the json response from the server
+     * @return the response message as string
+     * @throws JsonProcessingException if the response cannot be parsed
+     * @throws ErrorMessageException if the response contains an error
+     */
     public String parseResponse(String response) throws JsonProcessingException, ErrorMessageException {
         ObjectMapper mapper = new ObjectMapper();
         if(CopilotSettingsState.getInstance().usedChatModel.equals("Custom")){
@@ -132,6 +158,10 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
 
     public abstract ChatRequestFormat getNewInstance(boolean persistentChatHistory);
 
+    /**
+     * Add all open editors to the code context
+     * @param project the current project
+     */
     public void addCodeContext(Project project){
         chatHistory.removeCodeContext();
         FileEditor[] editors = FileEditorManager.getInstance(project).getAllEditors();

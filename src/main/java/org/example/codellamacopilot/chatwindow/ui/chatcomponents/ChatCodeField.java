@@ -31,11 +31,20 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Chat element to show code responses from the chatbot with extra Buttons
+ */
 public class ChatCodeField extends JPanel {
 
     private final Project PROJECT;
     private ChatWindow chatWindow;
 
+    /**
+     * Creates a chat code field
+     * @param html the html document containing the code
+     * @param project the project
+     * @param chatWindow the chat window
+     */
     public ChatCodeField(Document html, Project project, ChatWindow chatWindow) {
         super();
         this.PROJECT = project;
@@ -49,12 +58,14 @@ public class ChatCodeField extends JPanel {
         JPanel spacePanel = new JPanel();
         spacePanel.setPreferredSize(new Dimension(5, 0));
 
-        EditorColorsScheme scheme = EditorColorsManager.getInstance().getGlobalScheme();
-
         this.setLayout(new BorderLayout(3, 0));
         JTextPane textPane = new JTextPane();
+
+        // Set the background color of the text pane to the default background color of the IDE
+        EditorColorsScheme scheme = EditorColorsManager.getInstance().getGlobalScheme();
         textPane.setBackground(scheme.getDefaultBackground());
 
+        // Create all actions
         AnAction copyAction = new AnAction() {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
@@ -87,6 +98,7 @@ public class ChatCodeField extends JPanel {
 
         boolean isClass = code.contains("class");
 
+        // Create ActionGroup from created actions
         ActionGroup actionGroup = new ActionGroup() {
             @Override
             public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
@@ -98,6 +110,7 @@ public class ChatCodeField extends JPanel {
             }
         };
 
+        // Add the ActionGroup to an ActionToolbar
         ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar("CodeToolbar", actionGroup, true);
         actionToolbar.setTargetComponent(this);
 
@@ -115,6 +128,11 @@ public class ChatCodeField extends JPanel {
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
+    /**
+     * Method that is executed when the createClass action is triggered. This method creates a new class file in the same
+     * folder as the current file.
+     * @param code the code to be written to the new class file
+     */
     private void createClassFile(String code) {
         try{
             // Create class file from code
@@ -126,7 +144,7 @@ public class ChatCodeField extends JPanel {
             String className = code.substring(code.indexOf("class") + 5, code.indexOf("{")).trim();
             String filePath = documentFile.getPath()
                     .replace(documentFile.getName(), className + ".java");
-            //Create the file
+            //Create the file until unique name is found
             try {
                 createFileUntilSuccess(filePath, code);
             } catch (IOException e) {
@@ -139,11 +157,20 @@ public class ChatCodeField extends JPanel {
         }
     }
 
+    /**
+     * Method that creates a file with the given code at the given file path. If the file already exists, the method
+     * will append a number to the file name until a unique file name is found. This method will be called by the
+     * createClassFile method.
+     * @param filePath the path of the file to be created
+     * @param code the code to be written to the file
+     * @throws IOException if an error occurs while creating the file
+     */
     private void createFileUntilSuccess(String filePath, String code) throws IOException {
         // Create file until success
         File file = new File(filePath);
         int i = 1;
         while (!file.createNewFile()) {
+            // Append number to file name until unique name is found
             filePath = filePath.replace(".java", "(" + i + ")" + ".java");
             file = new File(filePath);
             i++;
@@ -153,6 +180,11 @@ public class ChatCodeField extends JPanel {
 
     }
 
+    /**
+     * Method that is executed when the insertAtCaret action is triggered. This method inserts the code at the current
+     * caret position in the editor.
+     * @param code the code to be inserted
+     */
     private void insertCodeAtCaret(String code) {
         // Insert code at caret
         com.intellij.openapi.editor.Document currentDocument = FileEditorManager.getInstance(PROJECT)

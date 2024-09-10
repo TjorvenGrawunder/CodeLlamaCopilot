@@ -7,6 +7,9 @@ import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import java.io.IOException;
 import java.net.http.HttpRequest;
 
+/**
+ * ChatRequestFormat defines the format of the chat request and response
+ */
 public interface ChatRequestFormat {
     /**
      * Get the request object from the message

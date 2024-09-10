@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.ErrorObject;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 
+/**
+ * Chat Response Object that is received from the server of custom models
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomChatResponseObject {
     private MessageObject message;

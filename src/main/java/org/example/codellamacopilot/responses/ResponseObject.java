@@ -1,5 +1,8 @@
 package org.example.codellamacopilot.responses;
 
+/**
+ * Response object for the model.
+ */
 public abstract class ResponseObject {
 
     public abstract java.lang.String getGeneratedCode();

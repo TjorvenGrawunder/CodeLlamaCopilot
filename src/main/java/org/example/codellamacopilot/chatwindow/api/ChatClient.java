@@ -63,16 +63,37 @@ public class ChatClient {
         return requestFormat.parseResponse(response.body());
     }
 
+    /**
+     * Explains the code in the current opened editor
+     * @return the response from the chat model
+     * @throws IOException if the file cannot be read
+     * @throws InterruptedException if the request is interrupted
+     * @throws ErrorMessageException if the response is an error message
+     */
     public String explain() throws IOException, InterruptedException, ErrorMessageException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         return sendMessage("Please explain the following code: \n" +currentDocument.getText());
     }
 
+    /**
+     * Debugs the code in the current opened editor
+     * @return the response from the chat model
+     * @throws IOException if the file cannot be read
+     * @throws InterruptedException if the request is interrupted
+     * @throws ErrorMessageException if the response is an error message
+     */
     public String debug() throws IOException, InterruptedException, ErrorMessageException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         return sendMessage("Please debug the following code: \n" +currentDocument.getText());
     }
 
+    /**
+     * Creates a junit test file for the code in the current opened editor
+     * @return the response from the chat model
+     * @throws IOException if the file cannot be read
+     * @throws InterruptedException if the request is interrupted
+     * @throws ErrorMessageException if the response is an error message
+     */
     public String test() throws IOException, InterruptedException, ErrorMessageException {
         Document currentDocument = FileEditorManager.getInstance(PROJECT).getSelectedTextEditor().getDocument();
         VirtualFile documentFile = FileDocumentManager.getInstance().getFile(currentDocument);
@@ -95,11 +116,6 @@ public class ChatClient {
         }else {
             response = "No file found";
         }
-
-        //String title = response.split("\n")[0];
-        //String packageName = title.substring(8, title.length()-1).replaceAll("\\.","/");
-        //System.out.println(packageName);
-
 
         return response;
     }

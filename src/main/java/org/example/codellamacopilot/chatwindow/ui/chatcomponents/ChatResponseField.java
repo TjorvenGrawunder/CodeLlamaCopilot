@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+/**
+ * Chat element to show responses from the chatbot
+ */
 public class ChatResponseField extends JPanel {
 
     private ChatWindow chatWindow;
@@ -46,6 +49,12 @@ public class ChatResponseField extends JPanel {
         }
     }
 
+    /**
+     * Highlight code blocks in the chat response based on the language. This method can only highlight code blocks with
+     * languages that are supported by the IDE.
+     * @param doc the document containing the code blocks
+     * @param project the project
+     */
     private void highlightCodeBlocks(org.jsoup.nodes.Document doc, Project project) {
         //Get all code blocks
         Elements codeBlocks = doc.select("code");
@@ -73,6 +82,13 @@ public class ChatResponseField extends JPanel {
         }
     }
 
+    /**
+     * Convert html language name to intellij language ID. New Languages must be added to Intellij Language class
+     * and this method must be updated to support the new language.
+     * Every new language must have an own syntax highlighter.
+     * @param languageName the language name
+     * @return the language ID
+     */
     private String convertLanguageID(String languageName){
         return switch (languageName) {
             case "java" -> "JAVA";

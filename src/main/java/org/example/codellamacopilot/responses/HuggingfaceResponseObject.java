@@ -3,6 +3,9 @@ package org.example.codellamacopilot.responses;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Response object for the Hugging Face model.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HuggingfaceResponseObject extends ResponseObject {
     private java.lang.String generatedCode;

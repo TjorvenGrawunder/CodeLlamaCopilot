@@ -1,5 +1,8 @@
 package org.example.codellamacopilot.util;
 
+/**
+ * Tuple of a comment and a code snippet.
+ */
 public class CommentCodeSnippetTuple {
     private String comment;
     private CodeSnippet codeSnippet;

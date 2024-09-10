@@ -1,8 +1,11 @@
 package org.example.codellamacopilot.completionutil;
 
+import org.apache.http.annotation.Experimental;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Experimental
 public class CompletionPropositionsStorage {
     private static List<String> propositions = new ArrayList<>();
 

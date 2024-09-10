@@ -5,6 +5,9 @@ import com.intellij.ui.JBColor;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Simple Text Area to display messages from the user
+ */
 public class ChatElement extends JPanel {
     private JTextArea messageTextArea;
 

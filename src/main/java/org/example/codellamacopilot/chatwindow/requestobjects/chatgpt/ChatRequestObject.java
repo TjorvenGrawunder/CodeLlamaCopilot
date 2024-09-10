@@ -5,6 +5,9 @@ import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageOb
 
 import java.util.List;
 
+/**
+ * Object that is sent to the server
+ */
 public class ChatRequestObject {
     private String model;
     private List<MessageObject> messages;

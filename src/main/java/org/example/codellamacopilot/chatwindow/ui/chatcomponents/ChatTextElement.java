@@ -2,6 +2,9 @@ package org.example.codellamacopilot.chatwindow.ui.chatcomponents;
 
 import javax.swing.*;
 
+/**
+ * Simple Text Pane to display messages from the user that are not code
+ */
 public class ChatTextElement extends JTextPane {
     public ChatTextElement(String message) {
         super();

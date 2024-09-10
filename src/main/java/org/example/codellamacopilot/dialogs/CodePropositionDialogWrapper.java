@@ -1,13 +1,14 @@
 package org.example.codellamacopilot.dialogs;
 
 import com.intellij.openapi.ui.DialogWrapper;
+import org.apache.http.annotation.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-
+@Experimental
 public class CodePropositionDialogWrapper extends DialogWrapper {
 
     List<String> propositions;

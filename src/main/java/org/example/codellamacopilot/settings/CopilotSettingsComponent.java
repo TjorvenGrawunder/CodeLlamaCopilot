@@ -21,6 +21,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+/**
+ * This class is responsible for creating the settings UI for the plugin.
+ */
 public class CopilotSettingsComponent {
 
     //Settings State

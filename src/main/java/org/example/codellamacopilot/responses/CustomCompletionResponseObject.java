@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.bytebuddy.utility.dispatcher.JavaDispatcher;
 
+/**
+ * Custom response object for the custom model.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomCompletionResponseObject extends ResponseObject {
     private java.lang.String generatedCode;

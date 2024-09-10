@@ -3,6 +3,9 @@ package org.example.codellamacopilot.requests;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.example.codellamacopilot.requests.requestparameters.RequestParameters;
 
+/**
+ * Custom request object for the custom model.
+ */
 public class CustomRequestObject extends RequestObject{
     private String prompt;
     private String suffix;
