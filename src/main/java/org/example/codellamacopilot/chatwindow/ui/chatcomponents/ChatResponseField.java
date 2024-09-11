@@ -59,12 +59,8 @@ public class ChatResponseField extends JPanel {
         //Get all code blocks
         Elements codeBlocks = doc.select("code");
 
-        //Remove code blocks that are too short
-        codeBlocks.removeIf(element -> element.text().length() < 50);
-
         for (Element codeBlock : codeBlocks) {
             String code = codeBlock.text();
-
             String className = codeBlock.className();
             String languageId = null;
 
