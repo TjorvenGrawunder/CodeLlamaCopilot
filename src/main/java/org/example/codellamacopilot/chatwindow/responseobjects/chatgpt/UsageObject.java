@@ -1,7 +1,9 @@
 package org.example.codellamacopilot.chatwindow.responseobjects.chatgpt;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UsageObject {
     private int promptTokens;
     private int completionTokens;
