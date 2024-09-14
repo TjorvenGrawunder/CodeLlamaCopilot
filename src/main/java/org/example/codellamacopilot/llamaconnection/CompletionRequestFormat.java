@@ -11,9 +11,27 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 
+/**
+ * Request format that can be used for completion requests.
+ */
 public interface CompletionRequestFormat {
+    /**
+     * Get the HttpRequest object for the request
+     * @param data The CodeSnippet object that contains the data to send
+     * @return The HttpRequest object
+     * @throws JsonProcessingException If an error occurs while processing the JSON
+     */
     HttpRequest getRequest(CodeSnippet data) throws JsonProcessingException;
+
+    /**
+     * Parse the response from the server
+     * @param response The response from the server
+     * @return The parsed response
+     * @throws IOException If an error occurs while parsing the response
+     */
     String parseResponse(String response) throws IOException;
+
+
     void setModel(String model);
     String getName();
 

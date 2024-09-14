@@ -15,6 +15,9 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration
 
+/**
+ * Rebuild of the DebouncedInlineCompletionProvider Interface to catch CancellationExceptions
+ */
 abstract class DebouncedInlineCompletionProviderRebuild : InlineCompletionProvider {
     private var jobCall: Job? = null
     protected abstract val delay: Duration

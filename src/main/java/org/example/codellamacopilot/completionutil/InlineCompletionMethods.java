@@ -6,6 +6,7 @@ import com.intellij.codeInsight.inline.completion.elements.InlineCompletionGrayT
 import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSingleSuggestion;
 import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSuggestion;
 import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionVariant;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
@@ -31,6 +32,9 @@ import org.jetbrains.concurrency.CancellablePromise;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Class to handle inline completion requests
+ */
 public class InlineCompletionMethods {
     private final InlineCompletionRequest INLINE_COMPLETION_REQUEST;
 
@@ -47,6 +51,13 @@ public class InlineCompletionMethods {
         this.INLINE_COMPLETION_REQUEST = inlineCompletionRequest;
     }
 
+    /**
+     * Get the proposals for the inline completion. This method is called when the user triggers the inline completion.
+     * The method sends the code snippet to the completion client and returns the response.
+     * If the user has enabled the chat as completion, the method sends the code snippet to the chat client and returns the response.
+     * If the code snippet contains a comment, the method sends the comment to the chat client and returns the response.
+     * @return the proposals
+     */
     public InlineCompletionSuggestion getProposals() {
         CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().getUsedCompletionRequestFormat());
         ChatClient chatClient = new ChatClient(INLINE_COMPLETION_REQUEST.getEditor().getProject(), CopilotSettingsState.getInstance().getUsedChatRequestFormat(false), false);
@@ -97,9 +108,16 @@ public class InlineCompletionMethods {
                         }
                     } catch (ErrorMessageException | CompletionFailedException e) {
                         response = "";
-                        String stackTrace = Throwables.getStackTrace(e);
-                        StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTrace);
-                        stackTraceDialogWrapper.showAndGet();
+                        StackTraceElement[] stackTraceElements = e.getStackTrace();
+                        StringBuilder stackTraceBuilder = new StringBuilder();
+                        stackTraceBuilder.append(e.getMessage()).append("\n");
+                        for (StackTraceElement stackTraceElement : stackTraceElements) {
+                            stackTraceBuilder.append(stackTraceElement.toString()).append("\n");
+                        }
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            StackTraceDialogWrapper stackTraceDialogWrapper = new StackTraceDialogWrapper(stackTraceBuilder.toString());
+                            stackTraceDialogWrapper.showAndGet();
+                        });
                     }
                     catch (IOException | InterruptedException e) {
                         throw new RuntimeException(e);
@@ -115,6 +133,14 @@ public class InlineCompletionMethods {
         return null;
     }
 
+    /**
+     * Search for a comment above the current caret position
+     * @param caretModel the caret model
+     * @param document the document
+     * @return the comment and the code snippet
+     * @throws ExecutionException if an error occurs during execution
+     * @throws InterruptedException if the execution is interrupted
+     */
     private CommentCodeSnippetTuple searchForComment(CaretModel caretModel, Document document) throws ExecutionException, InterruptedException {
         CancellablePromise<CommentCodeSnippetTuple> commentPromise = ReadAction.nonBlocking(() -> {
             ProgressManager.checkCanceled();

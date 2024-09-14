@@ -12,6 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to store the chat history of the assistant
+ */
 @Service
 @State(
         name = "org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistory",
@@ -42,6 +45,7 @@ public final class ChatHistory implements PersistentStateComponent<ChatHistory.C
         //Chat history
         public List<MessageObject> messages;
 
+        // Initialize the chat history state with a system prompt
         public ChatHistoryState() {
             systemPrompts = new ArrayList<>() {
                 {

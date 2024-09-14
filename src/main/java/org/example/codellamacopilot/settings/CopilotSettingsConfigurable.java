@@ -7,6 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.Objects;
 
+/**
+ * This Class is responsible to detect changes in the settings and apply or reset them.
+ */
 public final class CopilotSettingsConfigurable implements Configurable {
 
     private CopilotSettingsComponent copilotSettingsComponent;

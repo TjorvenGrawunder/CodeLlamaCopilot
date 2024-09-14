@@ -20,7 +20,9 @@ import org.example.codellamacopilot.settings.modelsettings.completionsettings.Cu
 import org.example.codellamacopilot.settings.modelsettings.completionsettings.HuggingFaceSpecificSettings;
 import org.jetbrains.annotations.NotNull;
 
-
+/**
+ * This class is used to store the settings of the plugin.
+ */
 @State(
         name = "org.example.codellamacopilot.settings.CopilotSettingsState",
         storages = @Storage("CodeLlamaCopilotSettings.xml")
@@ -78,6 +80,10 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
         XmlSerializerUtil.copyBean(state, this);
     }
 
+    /**
+     * Get the completion request format for the used model from string.
+     * @return the completion request format
+     */
     public CompletionRequestFormat getUsedCompletionRequestFormat() {
         return switch (usedModel) {
             case "HuggingFace" -> huggingFaceSpecificSettings.getCompletionRequestFormat();
@@ -86,6 +92,11 @@ public final class CopilotSettingsState implements PersistentStateComponent<Copi
         };
     }
 
+    /**
+     * Get the chat request format for the used chat model from string.
+     * @param persistentChatHistory whether the chat history should be persistent or not
+     * @return the chat request format
+     */
     public ChatRequestFormat getUsedChatRequestFormat(boolean persistentChatHistory) {
         return switch (usedChatModel) {
             case "ChatGPT" -> chatGPTSpecificSettings.getChatRequestFormat(persistentChatHistory);

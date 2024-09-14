@@ -2,6 +2,9 @@ package org.example.codellamacopilot.requests.requestparameters;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * HuggingFace request parameters for the HuggingFace model.
+ */
 public class HuggingFaceRequestParameters implements RequestParameters{
     private Integer topK;
     private Float topP;

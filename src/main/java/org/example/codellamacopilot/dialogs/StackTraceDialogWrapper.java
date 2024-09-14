@@ -11,6 +11,9 @@ import org.jsoup.Jsoup;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Dialog to display a stack trace
+ */
 public class StackTraceDialogWrapper extends DialogWrapper {
     private String stackTrace;
 

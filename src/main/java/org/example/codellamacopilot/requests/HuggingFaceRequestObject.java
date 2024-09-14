@@ -3,6 +3,9 @@ package org.example.codellamacopilot.requests;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.example.codellamacopilot.requests.requestparameters.RequestParameters;
 
+/**
+ * Request object for the Hugging Face model.
+ */
 public class HuggingFaceRequestObject extends RequestObject{
     private String inputs;
     private RequestParameters parameters;

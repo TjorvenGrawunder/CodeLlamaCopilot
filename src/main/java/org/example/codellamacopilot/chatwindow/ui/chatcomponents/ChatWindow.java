@@ -33,10 +33,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 import java.awt.*;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 
+/**
+ * ChatWindow is the main chat window that contains the chat messages and the input field. It will be
+ * displayed as a tool window in the IDE.
+ */
 public class ChatWindow {
     private JPanel mainPanel;
     private JPanel messagePanel;
@@ -46,11 +51,16 @@ public class ChatWindow {
     private Project project;
     private ExtendableTextComponent.Extension sendExtension;
 
+    /**
+     * Creates the chat window and initializes the chat messages and main components
+     * @param project the project
+     */
     public ChatWindow(Project project) {
         this.project = project;
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
+        // Reload chat messages when the UI settings change
         MessageBus bus = ApplicationManager.getApplication().getMessageBus();
         bus.connect().subscribe(UISettingsListener.TOPIC, (UISettingsListener) this::reloadChatMessages);
 
@@ -65,6 +75,7 @@ public class ChatWindow {
 
         inputField = new ExpandableTextField();
 
+        // Check if theme is dark and set the send icon accordingly
         boolean isDark = EditorColorsManager.getInstance().isDarkEditor();
         sendExtension = ExtendableTextComponent.Extension.create(
                 isDark ? LLMCopilotIcons.SendIconDark: LLMCopilotIcons.SendIconLight, "Send message", this::onSendClick);
@@ -84,6 +95,10 @@ public class ChatWindow {
         return mainPanel;
     }
 
+    /**
+     * Sends a message to the chat client and displays the response in the chat window
+     * @param message the message to send
+     */
     private void sendMessage(String message) {
         ChatElement chatElement = new ChatElement(message);
         messagePanel.add(chatElement);
@@ -98,6 +113,7 @@ public class ChatWindow {
         boolean skipResponse = false;
         String response;
         try {
+            // Check if the message is a command
             switch (message) {
                 case "\\debug" -> response = chatClient.debug();
                 case "\\explain" -> response = chatClient.explain();
@@ -112,21 +128,26 @@ public class ChatWindow {
                     response = "Chat cleared!";
                     skipResponse = true;
                 }
+                // Default case is to send the message to the chat client
                 default -> response = chatClient.sendMessage(message);
             }
 
             if(!skipResponse){
-                String[] messageParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
+                // Split the response into parts based on the code blocks
+                //String[] messageParts = response.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
 
+                ChatResponseField chatResponseField = getChatResponseField(response);
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    messagePanel.add(new ChatResponseField(messageParts, project, this));
+                    messagePanel.add(chatResponseField);
                     messagePanel.revalidate();
                 });
             }
         }catch (ErrorMessageException errorMessageException){
+            // Handle error message from the server
             chatClient.getRequestFormat().removeLastMessage();
             sendChatAlert(errorMessageException.getMessage(), "");
         } catch (Exception e) {
+            // Handle other exceptions
             chatClient.getRequestFormat().removeLastMessage();
             String stackTrace = Throwables.getStackTraceAsString(e);
 
@@ -134,21 +155,25 @@ public class ChatWindow {
         }
     }
 
+    /**
+     * Initialize the chat messages at the start of the IDE
+     */
     private void initChatMessages() {
         ChatHistoryManipulator chatHistoryManipulator = new ChatHistoryManipulator();
         if (chatHistoryManipulator.getMessages().size() == 1 + chatHistoryManipulator.getContextCounter()) {
-            // Initialize chat messages
+            // First message
             ChatElement chatElement = new ChatElement("Hello! I'm your personal programming assistant. How can I help you today?");
             messagePanel.add(chatElement);
         }
+
+        // Go through the chat history and display the messages
         ApplicationManager.getApplication().invokeLater(() -> {
             for (MessageObject message : chatHistoryManipulator.getMessages()) {
                 if (message.getRole().equals("user")) {
                     ChatElement chatElement = new ChatElement(message.getContent());
                     messagePanel.add(chatElement);
                 } else if (message.getRole().equals("assistant")) {
-                    String[] messageParts = message.getContent().split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|js|lua|make|markdown|php|python|r|sql|tex|text|xml|groovy))|```");
-                    ChatResponseField chatResponseField = new ChatResponseField(messageParts, project, this);
+                    ChatResponseField chatResponseField = getChatResponseField(message.getContent());
                     messagePanel.add(chatResponseField);
                 }
                 messagePanel.revalidate();
@@ -161,8 +186,28 @@ public class ChatWindow {
         });
     }
 
+    /**
+     * Get the chat response field based on the message
+     * @param message the message
+     * @return the chat response field
+     */
+    private @NotNull ChatResponseField getChatResponseField(String message) {
+        String[] messageParts = message.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|json|js|lua|make|markdown|php|python|r|sql|tex|yaml|text|xml|groovy|kotlin))|```");
+        ChatResponseField chatResponseField;
+        try {
+            chatResponseField = new ChatResponseField(messageParts, project, this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return chatResponseField;
+    }
 
-    public void reloadChatMessages(UISettings uiSettings) {
+
+    /**
+     * Reload the chat messages when the UI settings change
+     * @param uiSettings the UI settings
+     */
+    private void reloadChatMessages(UISettings uiSettings) {
         messagePanel.removeAll();
         ApplicationManager.getApplication().invokeLater(() -> {
             inputField.removeExtension(sendExtension);
@@ -174,6 +219,11 @@ public class ChatWindow {
         initChatMessages();
     }
 
+    /**
+     * Send a chat alert with a message and stack trace. Can be used to display errors to the user.
+     * @param message the message
+     * @param stackTrace the stack trace
+     */
     public void sendChatAlert(String message, String stackTrace) {
         // Send chat alert
         JPanel errorPanel = new JPanel(new BorderLayout());
@@ -190,7 +240,11 @@ public class ChatWindow {
         message = "<font color=\"red\">" + message + "</font>";
         String finalMessage = message;
         ApplicationManager.getApplication().invokeLater(() ->{
-            errorPanel.add(new ChatResponseField(finalMessage, project, this), BorderLayout.CENTER);
+            try {
+                errorPanel.add(new ChatResponseField(finalMessage, project, this), BorderLayout.CENTER);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             if(!stackTrace.isEmpty()){
 
                 ActionGroup actionGroup = new ActionGroup() {
@@ -211,6 +265,11 @@ public class ChatWindow {
 
     }
 
+    /**
+     * Send the message when the send button is clicked. Disables the input field while the message is being sent.
+     * The message is sent on a separate thread to prevent the UI from freezing.
+     * Display Loading icon while the message is being sent.
+     */
     private void onSendClick(){
         inputField.setEnabled(false);
         String message = inputField.getText();

@@ -2,6 +2,9 @@ package org.example.codellamacopilot.settings.modelsettings;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Serializable settings parameters for the settings that will be serialized as json.
+ */
 public class SerializableSettingsParameters {
     private String apiToken;
     private String selectedModel;

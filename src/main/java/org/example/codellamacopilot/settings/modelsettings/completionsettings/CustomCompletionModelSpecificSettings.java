@@ -34,7 +34,7 @@ public class CustomCompletionModelSpecificSettings extends CompletionModelSpecif
 
     @Override
     public CompletionRequestFormat getCompletionRequestFormat() {
-        return new CustomModelRequestFormat(urlTextField.getText());
+        return new CustomModelRequestFormat(urlTextField.getText(), modelTextField.getText());
     }
 
     @Override

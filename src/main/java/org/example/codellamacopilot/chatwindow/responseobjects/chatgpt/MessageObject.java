@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
+/**
+ * Message that consists of a role and content.
+ * This MessageObject will be sent to the server and saved in the chat history
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MessageObject implements Serializable {
     private String role;

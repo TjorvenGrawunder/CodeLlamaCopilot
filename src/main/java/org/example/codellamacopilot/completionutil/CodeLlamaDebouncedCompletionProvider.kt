@@ -9,6 +9,9 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Debounced Inline completion provider that provides completions for the CodeLlama plugin with a delay.
+ */
 class CodeLlamaDebouncedCompletionProvider : DebouncedInlineCompletionProviderRebuild() {
     override val id: InlineCompletionProviderID
         get() = InlineCompletionProviderID("CodeLlamaDebouncedCompletionProvider")

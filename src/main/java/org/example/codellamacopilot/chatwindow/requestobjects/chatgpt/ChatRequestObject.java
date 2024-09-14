@@ -5,13 +5,18 @@ import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageOb
 
 import java.util.List;
 
-public class ChatGPTRequestObject {
+/**
+ * Object that is sent to the server
+ */
+public class ChatRequestObject {
     private String model;
     private List<MessageObject> messages;
+    private Boolean stream;
 
-    public ChatGPTRequestObject(String model, List<MessageObject> messages){
+    public ChatRequestObject(String model, List<MessageObject> messages, boolean stream){
         this.model = model;
         this.messages = messages;
+        this.stream = stream;
     }
 
     @JsonProperty("messages")
@@ -32,5 +37,15 @@ public class ChatGPTRequestObject {
     @JsonProperty("model")
     public void setModel(String model) {
         this.model = model;
+    }
+
+    @JsonProperty("stream")
+    public Boolean getStream() {
+        return stream;
+    }
+
+    @JsonProperty("stream")
+    public void setStream(boolean stream) {
+        this.stream = stream;
     }
 }

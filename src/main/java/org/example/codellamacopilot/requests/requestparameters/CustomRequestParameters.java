@@ -2,19 +2,23 @@ package org.example.codellamacopilot.requests.requestparameters;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Custom request parameters for the custom model.
+ */
 public class CustomRequestParameters implements RequestParameters {
-    private String model;
+    private int temperature;
 
-    public CustomRequestParameters(String model) {
-        if(model.isEmpty()){
-            this.model = null;
-        }else{
-            this.model = model;
-        }
+    public CustomRequestParameters(int temperature) {
+        this.temperature = temperature;
     }
 
-    @JsonProperty("model")
-    public String getModel() {
-        return model;
+    @JsonProperty("temperature")
+    public int getTemperature() {
+        return temperature;
+    }
+
+    @JsonProperty("temperature")
+    public void setTemperature(int temperature) {
+        this.temperature = temperature;
     }
 }

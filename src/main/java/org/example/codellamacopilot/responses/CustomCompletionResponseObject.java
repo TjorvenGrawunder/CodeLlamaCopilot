@@ -2,21 +2,22 @@ package org.example.codellamacopilot.responses;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import net.bytebuddy.utility.dispatcher.JavaDispatcher;
 
 /**
- * Response object for the Hugging Face model.
+ * Custom response object for the custom model.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HuggingfaceResponseObject extends ResponseObject {
+public class CustomCompletionResponseObject extends ResponseObject {
     private java.lang.String generatedCode;
     private java.lang.String error;
 
-    @JsonProperty("generated_text")
+    @JsonProperty("response")
     public java.lang.String getGeneratedCode() {
         return generatedCode;
     }
 
-    @JsonProperty("generated_text")
+    @JsonProperty("response")
     public void setGeneratedCode(java.lang.String generatedCode) {
         this.generatedCode = generatedCode;
     }

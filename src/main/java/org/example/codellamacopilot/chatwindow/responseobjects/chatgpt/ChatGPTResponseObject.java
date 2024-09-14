@@ -3,6 +3,9 @@ package org.example.codellamacopilot.chatwindow.responseobjects.chatgpt;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Object that is received from the server
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatGPTResponseObject {
     private String id;

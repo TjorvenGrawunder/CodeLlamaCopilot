@@ -5,7 +5,14 @@ import org.example.codellamacopilot.settings.modelsettings.ModelSpecificSettings
 
 import javax.swing.*;
 
+/**
+ * Specific Settings are settings that are specific to a particular completion model.
+ */
 public abstract class CompletionModelSpecificSettings extends JPanel implements ModelSpecificSettingsIdentifier {
+    /**
+     * Get the completion request format for the specific model.
+     * @return the completion request format
+     */
     public abstract CompletionRequestFormat getCompletionRequestFormat();
     public abstract String getCompletionApiToken();
     public abstract void setCompletionApiToken(String completionApiToken);
