@@ -49,7 +49,8 @@ public final class ChatHistory implements PersistentStateComponent<ChatHistory.C
         public ChatHistoryState() {
             systemPrompts = new ArrayList<>() {
                 {
-                    add(new MessageObject("system", "You are a java assistant, skilled in explaining complex programming concepts. If you change something in classes, pleas mark changes with comments."));
+                    add(new MessageObject("system", "You are a java assistant, skilled in explaining complex programming concepts. " +
+                            "If you change something in classes, pleas mark changes with comments."));
                 }
             };
             messages = new ArrayList<>();

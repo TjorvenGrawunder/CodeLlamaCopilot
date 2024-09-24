@@ -23,6 +23,7 @@ import org.example.codellamacopilot.chatwindow.api.ChatClient;
 
 import org.example.codellamacopilot.chatwindow.persistentchathistory.ChatHistoryManipulator;
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
+import org.example.codellamacopilot.dialogs.ChangeChatPromptDialogWrapper;
 import org.example.codellamacopilot.dialogs.StackTraceDialogWrapper;
 import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.icons.LLMCopilotIcons;
@@ -73,6 +74,8 @@ public class ChatWindow {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
+        JPanel inputPanel = new JPanel(new BorderLayout());
+
         inputField = new ExpandableTextField();
 
         // Check if theme is dark and set the send icon accordingly
@@ -86,8 +89,32 @@ public class ChatWindow {
             onSendClick();
         });
 
+        AnAction changePromptAction = new AnAction() {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                ChangeChatPromptDialogWrapper changeChatPromptDialogWrapper = new ChangeChatPromptDialogWrapper();
+                changeChatPromptDialogWrapper.showAndGet();
+            }
+        };
+        changePromptAction.getTemplatePresentation().setIcon(AllIcons.Expui.FileTypes.Text);
+        changePromptAction.getTemplatePresentation().setText("Change Chat Prompt");
+
+        ActionGroup actionGroup = new ActionGroup() {
+            @Override
+            public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
+                return new AnAction[]{changePromptAction};
+            }
+        };
+
+        // Add the ActionGroup to an ActionToolbar
+        ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar("CodeToolbar", actionGroup, true);
+        actionToolbar.setTargetComponent(inputPanel);
+
+        inputPanel.add(inputField, BorderLayout.CENTER);
+        inputPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
+
         mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.add(inputField, BorderLayout.SOUTH);
+        mainPanel.add(inputPanel, BorderLayout.SOUTH);
         initChatMessages();
     }
 
@@ -102,10 +129,10 @@ public class ChatWindow {
     private void sendMessage(String message) {
         ChatElement chatElement = new ChatElement(message);
         messagePanel.add(chatElement);
-        messagePanel.revalidate();
 
         //Scroll to the bottom of the chat
         ApplicationManager.getApplication().invokeLater(() -> {
+            messagePanel.validate();
             JScrollBar vertical = scrollPane.getVerticalScrollBar();
             vertical.setValue(vertical.getMaximum());
         });
@@ -142,6 +169,13 @@ public class ChatWindow {
                     messagePanel.revalidate();
                 });
             }
+
+            //Scroll to the bottom of the chat
+            ApplicationManager.getApplication().invokeLater(() -> {
+                messagePanel.validate();
+                JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
+            });
         }catch (ErrorMessageException errorMessageException){
             // Handle error message from the server
             chatClient.getRequestFormat().removeLastMessage();
@@ -180,6 +214,7 @@ public class ChatWindow {
             }
 
             //Scroll to the bottom of the chat
+            messagePanel.validate();
             JScrollBar vertical = scrollPane.getVerticalScrollBar();
             vertical.setValue(vertical.getMaximum());
 

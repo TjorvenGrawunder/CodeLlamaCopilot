@@ -112,4 +112,20 @@ public class ChatHistoryManipulator {
     public void clearChatHistory() {
         state.messages.clear();
     }
+
+    /**
+     * Only change first system prompt
+     * @param prompt the new prompt
+     */
+    public void setSystemPrompt(String prompt){
+        state.systemPrompts.get(0).setContent(prompt);
+    }
+
+    /**
+     * Get the first system prompt
+     * @return the content of the first system prompt
+     */
+    public String getFirstSystemPrompt(){
+        return state.systemPrompts.get(0).getContent();
+    }
 }
