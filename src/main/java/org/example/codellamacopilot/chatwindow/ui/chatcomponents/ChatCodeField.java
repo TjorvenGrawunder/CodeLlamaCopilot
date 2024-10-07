@@ -30,6 +30,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 /**
  * Chat element to show code responses from the chatbot with extra Buttons
@@ -80,7 +81,6 @@ public class ChatCodeField extends JPanel {
         AnAction createClassAction = new AnAction() {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
-                System.out.println("Create Class");
                 createClassFile(code);
             }
         };
@@ -141,7 +141,9 @@ public class ChatCodeField extends JPanel {
             VirtualFile documentFile = FileDocumentManager.getInstance().getFile(currentDocument);
 
             //Extract the class name from the code
-            String className = code.substring(code.indexOf("class") + 5, code.indexOf("{")).trim();
+            StringTokenizer tokenizer = new StringTokenizer(code.substring(code.indexOf("class") + 5)," <" );
+
+            String className =  tokenizer.nextToken();
             String filePath = documentFile.getPath()
                     .replace(documentFile.getName(), className + ".java");
             //Create the file until unique name is found
