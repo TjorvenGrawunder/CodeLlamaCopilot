@@ -15,6 +15,7 @@ import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageOb
 import org.example.codellamacopilot.chatwindow.responseobjects.custom.CustomChatResponseObject;
 import org.example.codellamacopilot.exceptions.ErrorMessageException;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -126,7 +127,7 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
      * @throws JsonProcessingException if the response cannot be parsed
      * @throws ErrorMessageException if the response contains an error
      */
-    public String parseResponse(String response) throws JsonProcessingException, ErrorMessageException {
+    public String parseResponse(String response, boolean isCompletion, String currentLine) throws JsonProcessingException, ErrorMessageException {
         ObjectMapper mapper = new ObjectMapper();
         if(CopilotSettingsState.getInstance().usedChatModel.equals("Custom")){
             CustomChatResponseObject responseObject;
@@ -154,6 +155,11 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
             chatHistory.addMessage(new MessageObject("assistant", response));
         }
 
+        if (isCompletion) {
+            response = testForMarkdown(response);
+            response = testForDuplicateCode(response, currentLine);
+        }
+
         return response;
     }
 
@@ -171,6 +177,41 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
                 chatHistory.addCodeContext(new MessageObject("system", "Background information code:\n" + textEditor.getEditor().getDocument().getText()));
             }
         }
+    }
+
+    /**
+     * Test if the response starts with markdown code
+     * If it does, remove the markdown code from the response
+     * @param response the response from the server
+     * @return the response without the markdown code
+     */
+    private String testForMarkdown(String response){
+        if(response.startsWith("```java")){
+            response = response.substring(7, response.length()-3);
+        }
+        if (response.startsWith("```kotlin")){
+            response = response.substring(9, response.length()-3);
+        }
+        return response;
+    }
+
+    /**
+     * Test if the response starts with the current line
+     * If it does, remove the current line from the response
+     * @param response the response from the server
+     * @param currentLine the current line
+     * @return the response without the current line
+     */
+    private String testForDuplicateCode(String response, String currentLine){
+        response = response.trim();
+        currentLine = currentLine.trim();
+        System.out.println("Current line: " + currentLine);
+        System.out.println("Response: " + response);
+        if(response.startsWith(currentLine)){
+            System.out.println("Response starts with current line");
+            response = response.replace(currentLine, "");
+        }
+        return response;
     }
 
     public void removeLastMessage(){

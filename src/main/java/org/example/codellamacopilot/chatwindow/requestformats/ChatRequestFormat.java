@@ -32,7 +32,7 @@ public interface ChatRequestFormat {
      * @return the response message as markdown string
      * @throws IOException
      */
-    String parseResponse(String response) throws IOException, ErrorMessageException;
+    String parseResponse(String response, boolean isCompletion, String currentLine) throws IOException, ErrorMessageException;
 
     /**
      * Get a new instance of the ChatRequestFormat

@@ -99,8 +99,10 @@ public class InlineCompletionMethods {
                     try {
                         ProgressManager.checkCanceled();
                         if (CopilotSettingsState.getInstance().useChatAsCompletion) {
+                            CancellablePromise<String> currentLine = ReadAction.nonBlocking(() -> document.getCharsSequence().subSequence(document.getLineStartOffset(
+                                    document.getLineNumber(caretModel.getOffset())), caretModel.getOffset()).toString()).expireWith(CodeLlamaCopilotPluginDisposable.getInstance()).submit(AppExecutorUtil.getAppExecutorService());
                             response = chatClient.sendMessage("Prefix: " + cb.get().prefix() + "\nSuffix: "
-                                    + cb.get().suffix(), true);
+                                    + cb.get().suffix(), true, currentLine.get());
                             ProgressManager.checkCanceled();
                         } else {
                             response = client.sendData(cb.get());
