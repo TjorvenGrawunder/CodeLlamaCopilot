@@ -52,6 +52,14 @@ public class ChatWindow {
     private Project project;
     private ExtendableTextComponent.Extension sendExtension;
 
+    private final String helpMessage = "<h2 id=\"help-for-commands\">Help for Commands</h2>\n" +
+            "<ul>\n" +
+            "<li>\\test: generates JUnit-TestFile for the currently opened editor</li>\n" +
+            "<li>\\explain: explains the code in the currently opened editor</li>\n" +
+            "<li>\\debug: searches for bugs in the currently opened editor</li>\n" +
+            "<li>\\clear: cleares the chat history</li>\n" +
+            "</ul>";
+
     /**
      * Creates the chat window and initializes the chat messages and main components
      * @param project the project
@@ -144,6 +152,7 @@ public class ChatWindow {
             switch (message) {
                 case "\\debug" -> response = chatClient.debug();
                 case "\\explain" -> response = chatClient.explain();
+                case "\\help" -> response = helpMessage;
                 case "\\test" -> {
                     response = chatClient.test();
                     skipResponse = true;

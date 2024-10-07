@@ -13,6 +13,8 @@ import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
@@ -173,13 +175,18 @@ public class ChatCodeField extends JPanel {
         int i = 1;
         while (!file.createNewFile()) {
             // Append number to file name until unique name is found
-            filePath = filePath.replace(".java", "(" + i + ")" + ".java");
-            file = new File(filePath);
+            String newFilePath = filePath.replace(".java", "(" + i + ")" + ".java");
+            file = new File(newFilePath);
             i++;
         }
 
         FileUtils.writeStringToFile(file, code, "UTF-8", false);
 
+        // Refresh the file system to reflect the new file
+        VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file);
+        if (virtualFile != null) {
+            virtualFile.refresh(true, false);
+        }
     }
 
     /**

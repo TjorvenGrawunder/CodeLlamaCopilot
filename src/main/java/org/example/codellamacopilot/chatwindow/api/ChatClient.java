@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.io.FileUtils;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
@@ -100,16 +101,19 @@ public class ChatClient {
         String response;
         if(documentFile != null){
             String filePath = documentFile.getPath().replace(".java", "Test.java");
-            System.out.println("Document: " + documentFile.getPath());
             response = sendMessage("Please write a JUnit test file for the following code: \n" +currentDocument.getText() + "\n Only provide code.");
             response = response.substring(8, response.length()-3);
             try {
                 File file = new File(filePath);
-                if(file.createNewFile()){
-                    System.out.println("File created: " + file.getAbsolutePath());
-                }
+                file.createNewFile();
                 FileUtils.writeStringToFile(file, response, "UTF-8", false);
                 response = "File created: " + file.getAbsolutePath();
+
+                // Refresh the file system to reflect the new file
+                VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file);
+                if (virtualFile != null) {
+                    virtualFile.refresh(true, false);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
