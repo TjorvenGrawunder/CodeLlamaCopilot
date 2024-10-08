@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.io.FileUtils;
 import org.example.codellamacopilot.chatwindow.requestformats.ChatRequestFormat;
 import org.example.codellamacopilot.exceptions.ErrorMessageException;
+import org.example.codellamacopilot.exceptions.MissingModelException;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 
 import java.io.File;
@@ -26,9 +27,8 @@ public class ChatClient {
     private final HttpClient CLIENT = HttpClient.newHttpClient();
     private final boolean PERSISTENT_CHAT_HISTORY;
 
-    public ChatClient(Project project, ChatRequestFormat requestFormat, boolean persistentChatHistory) {
+    public ChatClient(Project project, boolean persistentChatHistory) {
         this.PROJECT = project;
-        this.requestFormat = requestFormat.getNewInstance(persistentChatHistory);
         this.PERSISTENT_CHAT_HISTORY = persistentChatHistory;
     }
 
@@ -48,20 +48,25 @@ public class ChatClient {
      * @return the response from the chat model
      */
     public String sendMessage(String message, boolean completionRequest, String currentLine) throws IOException, InterruptedException, ErrorMessageException {
-        //Get current chat request format from the settings
-        requestFormat = CopilotSettingsState.getInstance().getUsedChatRequestFormat(PERSISTENT_CHAT_HISTORY);
-        requestFormat.addCodeContext(PROJECT);
-        HttpRequest request;
-        if (completionRequest) {
-            request = requestFormat.getCompletionRequest(message);
-        }else{
-            request = requestFormat.getRequest(message);
+        try {
+            //Get current chat request format from the settings
+            requestFormat = CopilotSettingsState.getInstance().getUsedChatRequestFormat(PERSISTENT_CHAT_HISTORY);
+            requestFormat.addCodeContext(PROJECT);
+            HttpRequest request;
+            if (completionRequest) {
+                request = requestFormat.getCompletionRequest(message);
+            }else{
+                request = requestFormat.getRequest(message);
+            }
+
+            HttpResponse<String> response;
+
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            return requestFormat.parseResponse(response.body(), completionRequest, currentLine);
+        } catch (NullPointerException e) {
+            throw new MissingModelException("Please select a chat model in the settings");
         }
 
-        HttpResponse<String> response;
-
-        response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-        return requestFormat.parseResponse(response.body(), completionRequest, currentLine);
     }
 
     /**

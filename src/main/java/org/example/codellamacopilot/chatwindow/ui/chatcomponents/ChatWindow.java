@@ -26,6 +26,7 @@ import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageOb
 import org.example.codellamacopilot.dialogs.ChangeChatPromptDialogWrapper;
 import org.example.codellamacopilot.dialogs.StackTraceDialogWrapper;
 import org.example.codellamacopilot.exceptions.ErrorMessageException;
+import org.example.codellamacopilot.exceptions.MissingModelException;
 import org.example.codellamacopilot.icons.LLMCopilotIcons;
 import org.example.codellamacopilot.settings.CopilotSettingsState;
 import org.jetbrains.annotations.NotNull;
@@ -73,7 +74,7 @@ public class ChatWindow {
         MessageBus bus = ApplicationManager.getApplication().getMessageBus();
         bus.connect().subscribe(UISettingsListener.TOPIC, (UISettingsListener) this::reloadChatMessages);
 
-        this.chatClient = new ChatClient(this.project, CopilotSettingsState.getInstance().getUsedChatRequestFormat(true), true);
+        this.chatClient = new ChatClient(this.project, true);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
@@ -189,7 +190,11 @@ public class ChatWindow {
             // Handle error message from the server
             chatClient.getRequestFormat().removeLastMessage();
             sendChatAlert(errorMessageException.getMessage(), "");
-        } catch (Exception e) {
+        } catch (MissingModelException e) {
+            // Handle missing model exception
+            sendChatAlert("Please select a chat model in the settings", "");
+        }
+        catch (Exception e) {
             // Handle other exceptions
             chatClient.getRequestFormat().removeLastMessage();
             String stackTrace = Throwables.getStackTraceAsString(e);
