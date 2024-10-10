@@ -16,7 +16,7 @@ class CodeLlamaDebouncedCompletionProvider : DebouncedInlineCompletionProviderRe
     override val id: InlineCompletionProviderID
         get() = InlineCompletionProviderID("CodeLlamaDebouncedCompletionProvider")
     override val delay: Duration
-        get() = 1.seconds
+        get() = 0.5.seconds
 
     override fun force(request: InlineCompletionRequest): Boolean {
         return false
