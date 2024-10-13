@@ -101,7 +101,7 @@ public class InlineCompletionMethods {
                         if (CopilotSettingsState.getInstance().useChatAsCompletion) {
                             CancellablePromise<String> currentLine = ReadAction.nonBlocking(() -> document.getCharsSequence().subSequence(document.getLineStartOffset(
                                     document.getLineNumber(caretModel.getOffset())), caretModel.getOffset()).toString()).expireWith(CodeLlamaCopilotPluginDisposable.getInstance()).submit(AppExecutorUtil.getAppExecutorService());
-                            response = chatClient.sendMessage("Prefix: " + cb.get().prefix() + "\nSuffix: "
+                            response = chatClient.sendMessage("Please fill the gap between prefix and suffix. The response should only contain your new generated code and not prefix, suffix or any other text. \n Prefix: " + cb.get().prefix() + "\nSuffix: "
                                     + cb.get().suffix(), true, currentLine.get());
                             ProgressManager.checkCanceled();
                         } else {

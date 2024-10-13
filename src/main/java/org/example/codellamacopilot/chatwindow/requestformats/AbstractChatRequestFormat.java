@@ -96,8 +96,8 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
             {
                 add(new MessageObject("system", "You are an completion assistant that fill in the gap " +
                         "between provided prefix and suffix. If the prefix ends with a comment you should implement the content of" +
-                        "this comment. " +
-                        "Please only provide your new generated code in the middle. The generated code should not contain the prefix or suffix." +
+                        "this comment.  You should also complete comments if they were started." +
+                        "Please only provide your new generated code in the middle and use the correct indention. The generated code should not contain the prefix or suffix." +
                         "You are not allowed to use markdown in the middle."));
             }
         };
@@ -203,13 +203,13 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
      * @return the response without the current line
      */
     private String testForDuplicateCode(String response, String currentLine){
-        response = response.trim();
+        String trimmedResponse = response.trim();
         currentLine = currentLine.trim();
         System.out.println("Current line: " + currentLine);
         System.out.println("Response: " + response);
-        if(response.startsWith(currentLine)){
+        if(trimmedResponse.startsWith(currentLine)){
             System.out.println("Response starts with current line");
-            response = response.replace(currentLine, "");
+            response = trimmedResponse.replaceFirst(currentLine, "");
         }
         return response;
     }
