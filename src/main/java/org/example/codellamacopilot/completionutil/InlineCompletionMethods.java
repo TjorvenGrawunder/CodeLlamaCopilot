@@ -1,6 +1,7 @@
 package org.example.codellamacopilot.completionutil;
 
 import com.intellij.codeInsight.inline.completion.InlineCompletionRequest;
+import com.intellij.codeInsight.inline.completion.elements.InlineCompletionColorTextElement;
 import com.intellij.codeInsight.inline.completion.elements.InlineCompletionElement;
 import com.intellij.codeInsight.inline.completion.elements.InlineCompletionGrayTextElement;
 import com.intellij.codeInsight.inline.completion.suggestion.InlineCompletionSingleSuggestion;
@@ -178,4 +179,5 @@ public class InlineCompletionMethods {
 
         return commentPromise.get();
     }
+
 }

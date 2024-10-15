@@ -2,6 +2,7 @@ package org.example.codellamacopilot.chatwindow.persistentchathistory;
 
 import org.example.codellamacopilot.chatwindow.responseobjects.chatgpt.MessageObject;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,4 +129,5 @@ public class ChatHistoryManipulator {
     public String getFirstSystemPrompt(){
         return state.systemPrompts.get(0).getContent();
     }
+
 }

@@ -205,10 +205,7 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
     private String testForDuplicateCode(String response, String currentLine){
         String trimmedResponse = response.trim();
         currentLine = currentLine.trim();
-        System.out.println("Current line: " + currentLine);
-        System.out.println("Response: " + response);
         if(trimmedResponse.startsWith(currentLine)){
-            System.out.println("Response starts with current line");
             response = trimmedResponse.replaceFirst(currentLine, "");
         }
         return response;
@@ -229,4 +226,5 @@ public abstract class AbstractChatRequestFormat implements ChatRequestFormat{
     protected String getAPI_URL(){
         return this.API_URL;
     }
+
 }

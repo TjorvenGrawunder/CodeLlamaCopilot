@@ -38,7 +38,11 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * ChatWindow is the main chat window that contains the chat messages and the input field. It will be
@@ -241,7 +245,8 @@ public class ChatWindow {
      * @return the chat response field
      */
     private @NotNull ChatResponseField getChatResponseField(String message) {
-        String[] messageParts = message.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|json|js|lua|make|markdown|php|python|r|sql|tex|yaml|text|xml|groovy|kotlin))|```");
+        //String[] messageParts = message.split("(?=```(java|html|bash|bat|c|cmake|cpp|csharp|css|gitignore|ini|json|js|lua|make|markdown|php|python|r|sql|tex|yaml|text|xml|groovy|kotlin))|```");
+        String[] messageParts = splitAtCodeBlocks(message).toArray(new String[0]);
         ChatResponseField chatResponseField;
         try {
             chatResponseField = new ChatResponseField(messageParts, project, this);
@@ -340,5 +345,47 @@ public class ChatWindow {
                 vertical.setValue(vertical.getMaximum());
             });
         });
+    }
+
+    /**
+     * Split the markdown text into parts based on code blocks
+     * @param markdown
+     * @return the list of text and code blocks
+     */
+    public static List<String> splitAtCodeBlocks(String markdown) {
+        // Regular expression to match either text or code blocks
+        // The code block is captured in the parentheses (```.*?```)
+        Pattern pattern = Pattern.compile("(?s)(```.*?```)");
+        Matcher matcher = pattern.matcher(markdown);
+
+        List<String> result = new ArrayList<>();
+        int lastEnd = 0;
+
+        while (matcher.find()) {
+            // Add the text before the code block
+            if (lastEnd < matcher.start()) {
+                String textBeforeCodeBlock = markdown.substring(lastEnd, matcher.start()).trim();
+                if (!textBeforeCodeBlock.isEmpty()) {
+                    result.add(textBeforeCodeBlock);
+                }
+            }
+
+            // Add the code block itself
+            String codeBlock = matcher.group();
+            result.add(codeBlock);
+
+            // Update the last end position
+            lastEnd = matcher.end();
+        }
+
+        // Add any remaining text after the last code block
+        if (lastEnd < markdown.length()) {
+            String remainingText = markdown.substring(lastEnd).trim();
+            if (!remainingText.isEmpty()) {
+                result.add(remainingText);
+            }
+        }
+
+        return result;
     }
 }
