@@ -13,15 +13,13 @@ import java.net.http.HttpResponse;
  */
 public class CompletionClient {
 
-    private CompletionRequestFormat requestFormat;
     private final HttpClient CLIENT;
 
     /**
      * Constructor for the CompletionClient class.
      * @param completionRequestFormat The completion request format to use.
      */
-    public CompletionClient(CompletionRequestFormat completionRequestFormat) {
-        this.requestFormat = completionRequestFormat;
+    public CompletionClient( ) {
         this.CLIENT = HttpClient.newHttpClient();
     }
 
@@ -34,7 +32,7 @@ public class CompletionClient {
      */
     public String sendData(CodeSnippet data) throws IOException, InterruptedException {
         //Get current completion request format from the settings
-        requestFormat = CopilotSettingsState.getInstance().getUsedCompletionRequestFormat();
+        CompletionRequestFormat requestFormat = CopilotSettingsState.getInstance().getUsedCompletionRequestFormat();
         HttpRequest request = requestFormat.getRequest(data);
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
         return requestFormat.parseResponse(response.body());

@@ -18,7 +18,7 @@ import java.io.IOException;
 public class InsertCodeAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().getUsedCompletionRequestFormat());
+        CompletionClient client = new CompletionClient();
         Project currentProject = event.getProject();
         Editor editor = event.getData(CommonDataKeys.EDITOR);
         if(editor != null) {

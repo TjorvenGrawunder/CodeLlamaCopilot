@@ -36,14 +36,10 @@
                     factoryClass="org.example.codellamacopilot.chatwindow.ui.ChatToolWindowFactory"/>
     </extensions>
     <actions>
-        <action id="org.example.codellamacopilot.actions.InsertCodeAction" class="org.example.codellamacopilot.actions.InsertCodeAction"
-                text="Code Completion" description="Completes code">
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Q"/>
-        </action>
         <action id="org.example.codellamacopilot.actions.ShowOtherPropositionsAction"
-                class="org.example.codellamacopilot.actions.ShowOtherPropositionsAction"
-                text="ShowOtherPropositionsAction" description="Shows window with more code propositions">
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt U"/>
+                class="org.example.codellamacopilot.actions.ShowOtherPropositionsAction" text="ShowOtherPropositions"
+                description="Shows other proporsitions in a window">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Q"/>
         </action>
     </actions>
 </idea-plugin>

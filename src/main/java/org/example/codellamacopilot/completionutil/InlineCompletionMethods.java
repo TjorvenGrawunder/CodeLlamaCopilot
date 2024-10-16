@@ -60,7 +60,8 @@ public class InlineCompletionMethods {
      * @return the proposals
      */
     public InlineCompletionSuggestion getProposals() {
-        CompletionClient client = new CompletionClient(CopilotSettingsState.getInstance().getUsedCompletionRequestFormat());
+        CompletionPropositionsStorage.setValid(false);
+        CompletionClient client = new CompletionClient();
         ChatClient chatClient = new ChatClient(INLINE_COMPLETION_REQUEST.getEditor().getProject(), false);
         Project currentProject = INLINE_COMPLETION_REQUEST.getEditor().getProject();
         String response = "";
@@ -77,6 +78,9 @@ public class InlineCompletionMethods {
                             commentCodeSnippetTuple.getComment(),
                             commentCodeSnippetTuple.getCodeSnippet().prefix(),
                             commentCodeSnippetTuple.getCodeSnippet().suffix());
+                    CompletionPropositionsStorage.setCurrentMessage(message);
+                    CompletionPropositionsStorage.setValid(true);
+                    CompletionPropositionsStorage.setInstruct(true);
                     response = chatClient.sendMessage( message);
                     ProgressManager.checkCanceled();
                     Flow<InlineCompletionElement> flow = FlowKt.flowOf(new InlineCompletionGrayTextElement(response));
@@ -102,10 +106,18 @@ public class InlineCompletionMethods {
                         if (CopilotSettingsState.getInstance().useChatAsCompletion) {
                             CancellablePromise<String> currentLine = ReadAction.nonBlocking(() -> document.getCharsSequence().subSequence(document.getLineStartOffset(
                                     document.getLineNumber(caretModel.getOffset())), caretModel.getOffset()).toString()).expireWith(CodeLlamaCopilotPluginDisposable.getInstance()).submit(AppExecutorUtil.getAppExecutorService());
-                            response = chatClient.sendMessage("Please fill the gap between prefix and suffix. The response should only contain your new generated code and not prefix, suffix or any other text. \n Prefix: " + cb.get().prefix() + "\nSuffix: "
-                                    + cb.get().suffix(), true, currentLine.get());
+                            String message = "Please fill the gap between prefix and suffix. The response should only contain your new generated code and not prefix, suffix or any other text. \n Prefix: " + cb.get().prefix() + "\nSuffix: "
+                                    + cb.get().suffix();
+                            CompletionPropositionsStorage.setCurrentMessage(message);
+                            CompletionPropositionsStorage.setCurrentLine(currentLine.get());
+                            CompletionPropositionsStorage.setValid(true);
+                            CompletionPropositionsStorage.setInstruct(true);
+                            response = chatClient.sendMessage(message, true, currentLine.get());
                             ProgressManager.checkCanceled();
                         } else {
+                            CompletionPropositionsStorage.setCodeSnippet(cb.get());
+                            CompletionPropositionsStorage.setValid(true);
+                            CompletionPropositionsStorage.setInstruct(false);
                             response = client.sendData(cb.get());
                             ProgressManager.checkCanceled();
                         }
