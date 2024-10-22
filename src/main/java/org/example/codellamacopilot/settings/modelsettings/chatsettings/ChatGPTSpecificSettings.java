@@ -63,10 +63,10 @@ public class ChatGPTSpecificSettings extends ChatModelSpecificSettings {
     }
 
     private void addModels(){
-        chatModelComboBox.addItem("gpt-3.5-turbo");
         chatModelComboBox.addItem("gpt-4o-mini");
         chatModelComboBox.addItem("gpt-4o");
         chatModelComboBox.addItem("gpt-4-turbo");
         chatModelComboBox.addItem("gpt-4");
+        chatModelComboBox.addItem("gpt-3.5-turbo");
     }
 }
