@@ -31,7 +31,7 @@
                 parentId="tools"
                 instance="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
                 id="org.example.codellamacopilot.settings.CopilotSettingsConfigurable"
-                displayName="Code Llama Copilot"/>
+                displayName="Large Language Model Copilot"/>
         <toolWindow id="Chat Window" secondary="true" anchor="right"
                     factoryClass="org.example.codellamacopilot.chatwindow.ui.ChatToolWindowFactory"/>
     </extensions>
